@@ -1,0 +1,6 @@
+In the search bar: psql
+Set the account: Hit enter for everystep, but password
+Create the db: create database cyberpik_db;
+Create the user: create user cyberpik_user;
+Set the password for the user: alter user cyberpik_user with encrypted password 'cyberpik_pwd';
+Grant all privileges on db to user: grant all privileges on database cyberpik_db to cyberpik_user;
