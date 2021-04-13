@@ -28,6 +28,5 @@ public class Country {
     private String name;
     
     @OneToMany
-	@JoinColumn(name = "city_id")
 	private List<City> cities;
 }
