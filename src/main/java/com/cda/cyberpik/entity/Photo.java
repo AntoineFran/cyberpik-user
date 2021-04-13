@@ -18,10 +18,13 @@ public class Photo {
     @Column(name = "photo_id")
     private Long photoId;
     private String title;
-    
+
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @Lob
-    @Column(name = "image_bytes")
-    private byte[] imageBytes;
+    @Column(name = "photo_bytes")
+    private byte[] photoBytes;
     
     @Column(name = "is_profile_picture", nullable = false)
     private boolean isProfilePicture;
@@ -37,7 +40,7 @@ public class Photo {
 
     @OneToMany
     @JoinTable(
-            name = "photos_transformations",
+            name = "photo_transformations",
             joinColumns = @JoinColumn(name = "photo_id"),
             inverseJoinColumns = @JoinColumn(name = "transformation_id"))
     List<Transformation> photoTransformations;

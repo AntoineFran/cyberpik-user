@@ -12,7 +12,8 @@ import java.util.List;
 public class PhotoDto {
     private Long photoId;
     private String title;
-    private byte[] imageBytes;
+    private String photoUrl;
+    private byte[] photoBytes;
     private boolean isProfilePicture;
     private LocationDto location;
     private UserAccountDto userAccount;
