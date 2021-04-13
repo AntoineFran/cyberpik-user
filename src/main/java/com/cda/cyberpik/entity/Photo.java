@@ -1,17 +1,12 @@
 package com.cda.cyberpik.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -34,12 +29,16 @@ public class Photo {
     @OneToOne
     private Location location;
     
-    @ManyToOne
-    @Column(nullable = false)
+    @ManyToOne(optional = false)
     private UserAccount userAccount;
     
-    @ManyToOne    
-    @Column(nullable = false)
+    @ManyToOne(optional = false)
     private Format format;
-    
+
+    @OneToMany
+    @JoinTable(
+            name = "photos_transformations",
+            joinColumns = @JoinColumn(name = "photo_id"),
+            inverseJoinColumns = @JoinColumn(name = "transformation_id"))
+    List<Transformation> photoTransformations;
 }
