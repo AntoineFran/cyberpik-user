@@ -61,4 +61,8 @@ insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_for
                    user_account_user_account_id)
 values (true, NULL, 'foo.com', 'Foo', 1, 1, 1);
 
-insert into photo_transformations (photo_id, transformation_id) values (1, 1);
+insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_format_id, location_location_id,
+                   user_account_user_account_id)
+values (false, NULL, 'foo.com', 'filtered_photo_1', 1, null, 1);
+
+insert into photo_transformations (photo_id, transformation_id) values (2, 1);
