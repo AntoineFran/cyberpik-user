@@ -24,20 +24,24 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_account_id")
     private Long userAccountId;
-    private String username;
+    
+    @Column(name = "user_name", unique = true, nullable = false)
+    private String userName;
+    
+    @Column(nullable = false)
     private String password;
   
     @Column(unique = true, nullable = false)
     private String email;
     
     @Column(name = "is_archived")
-    private boolean isArchived;
+    private boolean isArchived = false;
     
     @Column(name = "is_admin")
-    private boolean isAdmin;
+    private boolean isAdmin = false;
     
     @Column(name = "enable_newsletter")
-    private boolean enableNewsletter;
+    private boolean enableNewsletter = false;
     
     @OneToOne
     private City city;

@@ -20,6 +20,8 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "city_id")
     private Long cityId;
+    
+    @Column(nullable = false)
     private String name;
     
     @ManyToOne(optional = false)
