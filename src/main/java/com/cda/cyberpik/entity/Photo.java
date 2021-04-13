@@ -24,23 +24,22 @@ public class Photo {
     private Long photoId;
     private String title;
     
-    @Column(name = "image_url")
-    private String imageUrl;
-    
     @Lob
     @Column(name = "image_bytes")
     private byte[] imageBytes;
     
-    @Column(name = "is_profile_picture")
+    @Column(name = "is_profile_picture", nullable = false)
     private boolean isProfilePicture;
 
     @OneToOne
     private Location location;
     
     @ManyToOne
+    @Column(nullable = false)
     private UserAccount userAccount;
     
-    @ManyToOne
+    @ManyToOne    
+    @Column(nullable = false)
     private Format format;
     
 }

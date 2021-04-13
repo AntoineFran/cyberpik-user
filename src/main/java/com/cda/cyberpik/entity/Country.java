@@ -23,6 +23,8 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "country_id")
     private Long countryId;
+    
+    @Column(nullable = false)
     private String name;
     
     @OneToMany
