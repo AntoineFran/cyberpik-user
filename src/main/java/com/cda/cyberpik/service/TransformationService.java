@@ -27,9 +27,9 @@ public class TransformationService implements IService<TransformationDto> {
 
     @Override
     public TransformationDto getById(long id) throws ServiceException {
-        Optional<Transformation> photoOpt = this.transformationDao.findById(id);
-        if (photoOpt.isPresent()) {
-            return this.modelMapper.map(photoOpt.get(), TransformationDto.class);
+        Optional<Transformation> transformationOpt = this.transformationDao.findById(id);
+        if (transformationOpt.isPresent()) {
+            return this.modelMapper.map(transformationOpt.get(), TransformationDto.class);
         } else {
             throw new ServiceException("Transformation not found");
         }
