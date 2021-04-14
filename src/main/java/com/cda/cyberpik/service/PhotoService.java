@@ -29,7 +29,7 @@ public class PhotoService  implements IService<PhotoDto>{
     public PhotoDto getById(long id) throws ServiceException {
         Optional<Photo> photoOpt = this.photoDao.findById(id);
         if(photoOpt.isPresent()){
-            return this.modelMapper.map(photoOpt.get(), photo.class);
+            return this.modelMapper.map(photoOpt.get(), PhotoDto.class);
         }else {
             throw new ServiceException("Photo not found");
         }
