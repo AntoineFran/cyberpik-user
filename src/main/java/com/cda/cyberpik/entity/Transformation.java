@@ -17,6 +17,7 @@ public class Transformation {
     private Long transformationID;
     private String title;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name="transformation_type_id", nullable=false)
     private TransformationType transformationType;
 }

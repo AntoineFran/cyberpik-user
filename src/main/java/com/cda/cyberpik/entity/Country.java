@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -27,6 +29,6 @@ public class Country {
     @Column(nullable = false)
     private String name;
     
-    @OneToMany
+    @OneToMany(cascade=ALL, mappedBy="country")
 	private List<City> cities;
 }
