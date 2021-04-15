@@ -30,15 +30,18 @@ public class Photo {
     private boolean isProfilePicture;
 
     @OneToOne
+    @JoinColumn(name="location_id")
     private Location location;
     
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name="user_account_id", nullable=false)
     private UserAccount userAccount;
     
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name="format_id", nullable=false)
     private Format format;
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(
             name = "photo_transformations",
             joinColumns = @JoinColumn(name = "photo_id"),

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -19,7 +21,6 @@ public class TransformationType {
     private Long transformationTypeId;
     private String title;
 
-    @OneToMany
-    @JoinColumn(name = "transformation_id")
+    @OneToMany(cascade=ALL, mappedBy="transformationType")
     private List<Transformation> transformations;
 }

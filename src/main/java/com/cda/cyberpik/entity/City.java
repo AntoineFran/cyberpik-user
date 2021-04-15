@@ -1,11 +1,6 @@
 package com.cda.cyberpik.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +19,7 @@ public class City {
     @Column(nullable = false)
     private String name;
     
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name="country_id", nullable=false)
     private Country country;
 }

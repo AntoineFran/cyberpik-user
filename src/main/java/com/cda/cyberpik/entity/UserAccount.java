@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -44,9 +46,9 @@ public class UserAccount {
     private boolean enableNewsletter = false;
     
     @OneToOne
+    @JoinColumn(name="city_id", nullable=false)
     private City city;
     
-    @OneToMany
-	@JoinColumn(name = "photo_id")
+    @OneToMany(cascade=ALL, mappedBy="userAccount")
 	private List<Photo> photos;
 }
