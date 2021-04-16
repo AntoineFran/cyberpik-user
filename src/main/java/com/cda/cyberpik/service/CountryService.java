@@ -30,7 +30,7 @@ public class CountryService implements IService<CountryDto> {
     @Override
     public CountryDto getById(long id) throws ServiceException {
         Optional<Country> countryOpt = this.countryDao.findById(id);
-        if (countryOpt.isPresent()){
+        if (countryOpt.isPresent()) {
             return this.modelMapper.map(countryOpt, CountryDto.class);
         } else {
             throw new ServiceException("Country not found");

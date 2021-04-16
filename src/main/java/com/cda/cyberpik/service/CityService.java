@@ -29,7 +29,7 @@ public class CityService implements IService<CityDto> {
     @Override
     public CityDto getById(long id) throws ServiceException {
         Optional<City> cityOpt = this.cityDao.findById(id);
-        if (cityOpt.isPresent()){
+        if (cityOpt.isPresent()) {
             return this.modelMapper.map(cityOpt.get(), CityDto.class);
         } else {
             throw new ServiceException("City not find");

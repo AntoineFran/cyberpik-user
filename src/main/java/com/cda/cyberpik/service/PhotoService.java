@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PhotoService  implements IService<PhotoDto>{
+public class PhotoService implements IService<PhotoDto> {
     @Autowired
     private ModelMapper modelMapper;
 
@@ -28,9 +28,9 @@ public class PhotoService  implements IService<PhotoDto>{
     @Override
     public PhotoDto getById(long id) throws ServiceException {
         Optional<Photo> photoOpt = this.photoDao.findById(id);
-        if(photoOpt.isPresent()){
+        if (photoOpt.isPresent()) {
             return this.modelMapper.map(photoOpt.get(), PhotoDto.class);
-        }else {
+        } else {
             throw new ServiceException("Photo not found");
         }
     }

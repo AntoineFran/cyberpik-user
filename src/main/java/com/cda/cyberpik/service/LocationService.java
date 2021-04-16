@@ -29,7 +29,7 @@ public class LocationService implements IService<LocationDto> {
     @Override
     public LocationDto getById(long id) throws ServiceException {
         Optional<Location> locationOpt = this.locationDao.findById(id);
-        if (locationOpt.isPresent()){
+        if (locationOpt.isPresent()) {
             return this.modelMapper.map(locationOpt, LocationDto.class);
         } else {
             throw new ServiceException("Location not found");
