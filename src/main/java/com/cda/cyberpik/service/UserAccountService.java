@@ -6,11 +6,13 @@ import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class UserAccountService implements IService<UserAccountDto> {
 
     @Autowired
