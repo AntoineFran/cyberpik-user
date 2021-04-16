@@ -20,7 +20,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     private IRepositoryUserAccount userAccountDao;
 
     @Override
-    public List<UserAccountDto> getAll(){
+    public List<UserAccountDto> getAll() {
         List<UserAccountDto> users = new ArrayList<>();
         this.userAccountDao.findAll().forEach(user -> users.add(this.modelMapper.map(user, UserAccountDto.class)));
         return users;
@@ -29,9 +29,9 @@ public class UserAccountService implements IService<UserAccountDto> {
     @Override
     public UserAccountDto getById(long id) throws ServiceException {
         Optional<UserAccount> userOpt = this.userAccountDao.findById(id);
-        if(userOpt.isPresent()){
+        if (userOpt.isPresent()) {
             return this.modelMapper.map(userOpt.get(), UserAccountDto.class);
-        }else {
+        } else {
             throw new ServiceException("UserAccount not found");
         }
     }
