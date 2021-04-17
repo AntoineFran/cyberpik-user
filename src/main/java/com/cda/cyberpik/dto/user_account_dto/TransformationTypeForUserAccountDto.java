@@ -1,6 +1,4 @@
-package com.cda.cyberpik.dto;
-
-import java.util.List;
+package com.cda.cyberpik.dto.user_account_dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransformationTypeDto {
+public class TransformationTypeForUserAccountDto {
     private Long transformationTypeId;
     private String title;
-    private List<TransformationDto> transformations;
 }

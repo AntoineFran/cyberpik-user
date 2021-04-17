@@ -46,7 +46,7 @@ public class UserAccount {
     private boolean enableNewsletter = false;
     
     @OneToOne
-    @JoinColumn(name="city_id", nullable=false)
+    @JoinColumn(name="city_id")
     private City city;
     
     @OneToMany(cascade=ALL, mappedBy="userAccount")
