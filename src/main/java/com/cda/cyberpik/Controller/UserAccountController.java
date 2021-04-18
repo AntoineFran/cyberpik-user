@@ -1,4 +1,4 @@
-package com.cda.cyberpik.Controller;
+package com.cda.cyberpik.controller;
 
 import java.util.List;
 
