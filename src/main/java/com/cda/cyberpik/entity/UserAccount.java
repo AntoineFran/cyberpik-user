@@ -43,7 +43,7 @@ public class UserAccount {
     private boolean isAdmin = false;
     
     @Column(name = "enable_newsletter")
-    private boolean enableNewsletter = false;
+    private boolean enableNewsletter;
     
     @OneToOne
     @JoinColumn(name="city_id")
