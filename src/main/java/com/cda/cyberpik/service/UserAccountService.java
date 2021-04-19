@@ -1,7 +1,7 @@
 package com.cda.cyberpik.service;
 
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
-import com.cda.cyberpik.dto.user_account_dto.UserAccountDto;
+import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import org.modelmapper.ModelMapper;
