@@ -30,13 +30,13 @@ public class UserAccountController {
 //    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 	@CrossOrigin
-	@GetMapping(value = "/")
+	@GetMapping(value = {"", "/"})
 	public ResponseEntity<List<UserAccountDto>> findAllUserAccounts() {
 		return new ResponseEntity(this.userAccountService.getAll(), HttpStatus.OK);
 	}
 
 	@CrossOrigin
-	@PostMapping(value = "/")
+	@PostMapping(value = {"", "/"})
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) {
 //       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
 //       userAccount.setPassword(encodePassword);
