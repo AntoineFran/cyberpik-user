@@ -1,6 +1,6 @@
 package com.cda.cyberpik.dto;
 
-import com.cda.cyberpik.dto.user_account_dto.CountryForUserAccountDto;
+import com.cda.cyberpik.dto.user.account.dto.CountryForUserAccountDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

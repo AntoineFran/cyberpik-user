@@ -1,4 +1,4 @@
-package com.cda.cyberpik.dto.user_account_dto;
+package com.cda.cyberpik.dto.user.account.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
