@@ -4,6 +4,7 @@ import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.exception.ServiceException;
+import jdk.jshell.spi.ExecutionControl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,12 @@ public class PhotoService implements IService<PhotoDto> {
 
     @Override
     public void add(PhotoDto o) {
-        this.photoDao.save(this.modelMapper.map(o, Photo.class));
+        throw new UnsupportedOperationException("Not implemented, use upload method instead");
+    }
+
+    public Long upload(PhotoDto o) {
+        Photo photo = this.photoDao.save(this.modelMapper.map(o, Photo.class));
+        photo = this.photoDao.save(photo);
+        return photo.getPhotoId();
     }
 }

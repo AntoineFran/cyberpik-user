@@ -1,8 +1,7 @@
-package com.cda.cyberpik.Controller;
+package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.exception.ServiceException;
-import com.cda.cyberpik.service.IService;
 import com.cda.cyberpik.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +36,7 @@ public class PhotoController {
 
         PhotoDto photo = new PhotoDto();
         photo.setPhotoBytes(file.getBytes());
-        Long imageId = photoService.addNew(photo);
+        Long imageId = photoService.upload(photo);
         return ResponseEntity.status(HttpStatus.OK).body(imageId);
     }
 }
