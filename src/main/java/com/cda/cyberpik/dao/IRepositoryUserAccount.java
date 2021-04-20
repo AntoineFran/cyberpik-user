@@ -3,4 +3,9 @@ package com.cda.cyberpik.dao;
 import com.cda.cyberpik.entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IRepositoryUserAccount extends JpaRepository<UserAccount, Long> {}
+import java.util.Optional;
+
+public interface IRepositoryUserAccount extends JpaRepository<UserAccount, Long> {
+    public Optional<UserAccount> findByUserName(String username);
+    public Optional<UserAccount> findByEmail(String email);
+}

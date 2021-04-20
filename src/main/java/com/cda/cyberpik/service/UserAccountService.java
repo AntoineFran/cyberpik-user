@@ -38,6 +38,24 @@ public class UserAccountService implements IService<UserAccountDto> {
         }
     }
 
+    public boolean getByUserName(String userName) {
+        Optional<UserAccount> userOpt = this.userAccountDao.findByUserName(userName);
+        if (userOpt.isPresent()) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+
+    public boolean getByEmail(String email) {
+        Optional<UserAccount> userOpt = this.userAccountDao.findByEmail(email);
+        if (userOpt.isPresent()) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+
     @Override
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));

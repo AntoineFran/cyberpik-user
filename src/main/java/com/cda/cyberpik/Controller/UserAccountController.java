@@ -40,8 +40,18 @@ public class UserAccountController {
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) {
 //       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
 //       userAccount.setPassword(encodePassword);
-		this.userAccountService.add(userAccount);
-		return new ResponseEntity(HttpStatus.OK);
+		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccount.getUserName());
+		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccount.getEmail());
+		if (userNameAlreadyExisting && emailAlreadyExisting){
+			return new ResponseEntity("Username & Email already taken" ,HttpStatus.CONFLICT);
+		} else if (userNameAlreadyExisting){
+			return new ResponseEntity("Username already taken" ,HttpStatus.CONFLICT);
+		} else if (emailAlreadyExisting) {
+			return new ResponseEntity("Email already taken" ,HttpStatus.CONFLICT);
+		} else {
+			this.userAccountService.add(userAccount);
+			return new ResponseEntity(HttpStatus.OK);
+		}
 	}
 
 	@CrossOrigin
