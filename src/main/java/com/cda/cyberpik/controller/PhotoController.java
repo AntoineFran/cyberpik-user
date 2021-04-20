@@ -24,7 +24,10 @@ public class PhotoController {
         PhotoDto photo;
         photo = photoService.getById(id);
         byte[] bytes = photo.getPhotoBytes();
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(bytes);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(bytes);
     }
 
     @CrossOrigin
@@ -37,6 +40,8 @@ public class PhotoController {
         PhotoDto photo = new PhotoDto();
         photo.setPhotoBytes(file.getBytes());
         Long imageId = photoService.upload(photo);
-        return ResponseEntity.status(HttpStatus.OK).body(imageId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(imageId);
     }
 }
