@@ -23,7 +23,7 @@ public class ServiceAspect{
 	public void ifServiceThrowsException(JoinPoint joinpoint, Exception ex) {
 		String className = joinpoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinpoint.getSignature().getName();
-		log.error("Exception on " + className + " with the method " + methodName, ex.getMessage());
+		log.error("Exception on " + className + " with the method " + methodName + ", exception : " + ex.getMessage());
 	}
 	
 }
