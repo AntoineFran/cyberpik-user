@@ -45,11 +45,11 @@ public class UserAccountController {
 		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccount.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccount.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
-			return new ResponseEntity("Username & Email already taken" ,HttpStatus.CONFLICT);
+			return new ResponseEntity("username & email already taken" ,HttpStatus.CONFLICT);
 		} else if (userNameAlreadyExisting){
-			return new ResponseEntity("Username already taken" ,HttpStatus.CONFLICT);
+			return new ResponseEntity("username already taken" ,HttpStatus.CONFLICT);
 		} else if (emailAlreadyExisting) {
-			return new ResponseEntity("Email already taken" ,HttpStatus.CONFLICT);
+			return new ResponseEntity("email already taken" ,HttpStatus.CONFLICT);
 		} else {
 			this.userAccountService.add(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
@@ -60,18 +60,17 @@ public class UserAccountController {
 	@GetMapping(value = "/{user_account_id}")
 	public ResponseEntity<?> findUserAccountById(@PathVariable("user_account_id") Long userAccountId)
 			throws ServiceException {
-
 		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
 	@CrossOrigin
-	@GetMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ServiceException {
 		UserAccountDto userAccount;
 		try {
 			 userAccount = this.userAccountService.getByEmailAndPassword(emailPassword.get("email"), emailPassword.get("password"));
 		}catch (ServiceException e) {
-			return new ResponseEntity("Wrong Email and/or wrong Password" ,HttpStatus.NOT_FOUND);
+			return new ResponseEntity("wrong email and/or wrong password" ,HttpStatus.UNAUTHORIZED);
 		}
 		return new ResponseEntity(userAccount, HttpStatus.OK);
 	}
