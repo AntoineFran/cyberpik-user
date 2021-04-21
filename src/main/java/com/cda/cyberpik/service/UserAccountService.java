@@ -39,7 +39,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     }
 
     public boolean getByUserName(String userName) {
-        Optional<UserAccount> userOpt = this.userAccountDao.findByUserName(userName);
+        Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
         if (userOpt.isPresent()) {
             return Boolean.TRUE;
         } else {
@@ -48,11 +48,20 @@ public class UserAccountService implements IService<UserAccountDto> {
     }
 
     public boolean getByEmail(String email) {
-        Optional<UserAccount> userOpt = this.userAccountDao.findByEmail(email);
+        Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(email);
         if (userOpt.isPresent()) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
+        }
+    }
+
+    public UserAccountDto getByEmailAndPassword(String email, String password) throws ServiceException {
+        Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmailAndPassword(email, password);
+        if (userOpt.isPresent()) {
+            return this.modelMapper.map(userOpt.get(), UserAccountDto.class);
+        } else {
+            throw new ServiceException("Invalid Credits");
         }
     }
 
