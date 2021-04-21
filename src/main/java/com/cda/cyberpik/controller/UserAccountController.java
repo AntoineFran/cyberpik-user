@@ -1,9 +1,11 @@
 package com.cda.cyberpik.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,7 +38,7 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
-	@PostMapping(value = {"", "/"})
+	@PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) {
 //       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
 //       userAccount.setPassword(encodePassword);
@@ -58,7 +60,20 @@ public class UserAccountController {
 	@GetMapping(value = "/{user_account_id}")
 	public ResponseEntity<?> findUserAccountById(@PathVariable("user_account_id") Long userAccountId)
 			throws ServiceException {
+
 		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
+	}
+
+	@CrossOrigin
+	@GetMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ServiceException {
+		UserAccountDto userAccount;
+		try {
+			 userAccount = this.userAccountService.getByEmailAndPassword(emailPassword.get("email"), emailPassword.get("password"));
+		}catch (ServiceException e) {
+			return new ResponseEntity("Wrong Email and/or wrong Password" ,HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity(userAccount, HttpStatus.OK);
 	}
 
 	@CrossOrigin
