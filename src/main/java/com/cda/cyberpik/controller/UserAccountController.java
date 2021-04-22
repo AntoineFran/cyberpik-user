@@ -3,6 +3,7 @@ package com.cda.cyberpik.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.cda.cyberpik.exception.ControllerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,17 +40,17 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) {
+	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) throws ControllerException {
 //       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
 //       userAccount.setPassword(encodePassword);
 		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccount.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccount.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
-			return new ResponseEntity("username & email already taken" ,HttpStatus.CONFLICT);
+			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
 		} else if (userNameAlreadyExisting){
-			return new ResponseEntity("username already taken" ,HttpStatus.CONFLICT);
+			throw new ControllerException(HttpStatus.CONFLICT, "username already taken");
 		} else if (emailAlreadyExisting) {
-			return new ResponseEntity("email already taken" ,HttpStatus.CONFLICT);
+			throw new ControllerException(HttpStatus.CONFLICT, "email already taken");
 		} else {
 			this.userAccountService.add(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
@@ -65,37 +66,48 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ServiceException {
+	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ControllerException {
 		UserAccountDto userAccount;
 		try {
 			 userAccount = this.userAccountService.getByEmailAndPassword(emailPassword.get("email"), emailPassword.get("password"));
-		}catch (ServiceException e) {
-			return new ResponseEntity("wrong email and/or wrong password" ,HttpStatus.UNAUTHORIZED);
+		} catch (ServiceException e) {
+			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong email and/or wrong password");
 		}
 		return new ResponseEntity(userAccount, HttpStatus.OK);
 	}
 
 	@CrossOrigin
     @PatchMapping(value = "/{user_account_id}")
-    public ResponseEntity<?> updateUserAccountById(@PathVariable("user_account_id") Long userAccountId, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException {
+    public ResponseEntity<?> updateUserAccountById(@PathVariable("user_account_id") Long userAccountId, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
 		UserAccountDto userAccount;
 		userAccount = this.userAccountService.getById(userAccountId);
-		
-		if (userAccountUpdated.getEmail() != null && !userAccountUpdated.getEmail().equals("")) {
-			userAccount.setEmail(userAccountUpdated.getEmail());
-		}
-		if (userAccountUpdated.getPassword() != null && !userAccountUpdated.getPassword().equals("")) {
-			userAccount.setPassword(userAccountUpdated.getPassword());
-		}
-		if (userAccountUpdated.getUserName() != null && !userAccountUpdated.getUserName().equals("")) {
-			userAccount.setUserName(userAccountUpdated.getUserName());
-		} 
-		if (userAccountUpdated.getCity() != null) {
-			userAccount.setCity(userAccountUpdated.getCity());
-		}
 
-		this.userAccountService.update(userAccount);
-		return new ResponseEntity(HttpStatus.OK);
+		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccountUpdated.getUserName());
+		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccountUpdated.getEmail());
+		if (userNameAlreadyExisting && emailAlreadyExisting){
+			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
+		} else if (userNameAlreadyExisting){
+			throw new ControllerException(HttpStatus.CONFLICT, "username already taken");
+		} else if (emailAlreadyExisting) {
+			throw new ControllerException(HttpStatus.CONFLICT, "email already taken");
+		} else {
+
+			if (userAccountUpdated.getEmail() != null && !userAccountUpdated.getEmail().equals("")) {
+				userAccount.setEmail(userAccountUpdated.getEmail());
+			}
+			if (userAccountUpdated.getPassword() != null && !userAccountUpdated.getPassword().equals("")) {
+				userAccount.setPassword(userAccountUpdated.getPassword());
+			}
+			if (userAccountUpdated.getUserName() != null && !userAccountUpdated.getUserName().equals("")) {
+				userAccount.setUserName(userAccountUpdated.getUserName());
+			}
+			if (userAccountUpdated.getCity() != null) {
+				userAccount.setCity(userAccountUpdated.getCity());
+			}
+
+			this.userAccountService.update(userAccount);
+			return new ResponseEntity(HttpStatus.OK);
+		}
 	}
 
 	
