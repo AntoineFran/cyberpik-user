@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
-import com.cda.cyberpik.service.UserAccountService;
+import com.cda.cyberpik.unit.UserAccountService;
 
 @RestController
 @RequestMapping("/cyberpik/user_accounts")
