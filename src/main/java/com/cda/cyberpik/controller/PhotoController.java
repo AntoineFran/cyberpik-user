@@ -2,7 +2,7 @@ package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.exception.ServiceException;
-import com.cda.cyberpik.unit.PhotoService;
+import com.cda.cyberpik.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
