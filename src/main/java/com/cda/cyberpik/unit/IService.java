@@ -1,4 +1,4 @@
-package com.cda.cyberpik.service;
+package com.cda.cyberpik.unit;
 
 import com.cda.cyberpik.exception.ServiceException;
 

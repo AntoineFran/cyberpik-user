@@ -1,4 +1,4 @@
-package com.cda.cyberpik.service;
+package com.cda.cyberpik.unit;
 
 import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dto.PhotoDto;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class PhotoServiceTest {
     private PhotoService photoService;
 
     @Test
-    void shouldReturnFindAll() {
+    void shouldReturnGetAll() {
         // Context
         Photo p1 = new Photo();
         p1.setPhotoId(1L);

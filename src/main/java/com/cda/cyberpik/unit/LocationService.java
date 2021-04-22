@@ -1,4 +1,4 @@
-package com.cda.cyberpik.service;
+package com.cda.cyberpik.unit;
 
 import com.cda.cyberpik.dao.IRepositoryLocation;
 import com.cda.cyberpik.dto.LocationDto;
