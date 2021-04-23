@@ -1,8 +1,11 @@
 package com.cda.cyberpik.controller;
 
+import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
+import com.cda.cyberpik.entity.Format;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.PhotoService;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(path = "image")
+@RequestMapping(path = "/image")
 public class PhotoController {
     @Autowired
     PhotoService photoService;
@@ -37,9 +40,16 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("File is empty");
         }
 
+        FormatDto format = new FormatDto();
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        format.setName(extension);
+
         PhotoDto photo = new PhotoDto();
+        photo.setFormat(format);
         photo.setPhotoBytes(file.getBytes());
+
         Long imageId = photoService.upload(photo);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(imageId);
