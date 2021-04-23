@@ -2,7 +2,7 @@ package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
-import com.cda.cyberpik.entity.Format;
+import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.PhotoService;
 import org.apache.commons.io.FilenameUtils;
@@ -42,10 +42,15 @@ public class PhotoController {
 
         FormatDto format = new FormatDto();
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        format.setName(extension);
+        format.setFormatId(1L);
+        // format.setName(extension);
+
+        UserAccountDto userAccount = new UserAccountDto();
+        userAccount.setUserAccountId(1L);
 
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
+        photo.setUserAccount(userAccount);
         photo.setPhotoBytes(file.getBytes());
 
         Long imageId = photoService.upload(photo);
