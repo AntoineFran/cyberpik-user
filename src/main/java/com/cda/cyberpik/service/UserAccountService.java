@@ -66,14 +66,12 @@ public class UserAccountService implements IService<UserAccountDto> {
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         UserAccount op = this.modelMapper.map(o, UserAccount.class);
-        System.out.println(op);
         this.userAccountDao.save(op);
     }
 
     @Override
     public void deleteById(long id) throws ServiceException {
         UserAccount userAccount = this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        this.photoDao.deleteByUserAccount(userAccount);
         this.userAccountDao.deleteById(id);
     }
 
