@@ -39,6 +39,13 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
+	@GetMapping(value = "/{user_account_id}")
+	public ResponseEntity<?> findUserAccountById(@PathVariable("user_account_id") Long userAccountId)
+			throws ServiceException {
+		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
+	}
+
+	@CrossOrigin
 	@PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) throws ControllerException {
 //       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
@@ -58,13 +65,6 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
-	@GetMapping(value = "/{user_account_id}")
-	public ResponseEntity<?> findUserAccountById(@PathVariable("user_account_id") Long userAccountId)
-			throws ServiceException {
-		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
-	}
-
-	@CrossOrigin
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ControllerException {
 		UserAccountDto userAccount;
@@ -77,11 +77,10 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
-    @PatchMapping(value = "/{user_account_id}")
+    @PatchMapping(value = "/{user_account_id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUserAccountById(@PathVariable("user_account_id") Long userAccountId, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
 		UserAccountDto userAccount;
 		userAccount = this.userAccountService.getById(userAccountId);
-
 		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccountUpdated.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccountUpdated.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
@@ -92,25 +91,39 @@ public class UserAccountController {
 			throw new ControllerException(HttpStatus.CONFLICT, "email already taken");
 		} else {
 
+			if (userAccountUpdated.getUserName() != null && !userAccountUpdated.getUserName().equals("")) {
+				userAccount.setUserName(userAccountUpdated.getUserName());
+			}
 			if (userAccountUpdated.getEmail() != null && !userAccountUpdated.getEmail().equals("")) {
 				userAccount.setEmail(userAccountUpdated.getEmail());
 			}
 			if (userAccountUpdated.getPassword() != null && !userAccountUpdated.getPassword().equals("")) {
 				userAccount.setPassword(userAccountUpdated.getPassword());
 			}
-			if (userAccountUpdated.getUserName() != null && !userAccountUpdated.getUserName().equals("")) {
-				userAccount.setUserName(userAccountUpdated.getUserName());
+			if (userAccountUpdated.getLocation() != null) {
+				userAccount.setLocation(userAccountUpdated.getLocation());
 			}
-			if (userAccountUpdated.getCity() != null) {
-				userAccount.setCity(userAccountUpdated.getCity());
+			if (userAccountUpdated.isEnableNewsletter() != userAccount.isEnableNewsletter()) {
+				userAccount.setEnableNewsletter(userAccountUpdated.isEnableNewsletter());
 			}
-
+			if (userAccountUpdated.getProfilePhoto() != null) {
+				userAccount.setProfilePhoto(userAccountUpdated.getProfilePhoto());
+			}
+			System.out.println(userAccount);
 			this.userAccountService.update(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
 		}
 	}
 
-	
+	@CrossOrigin
+	@PatchMapping(value = "/archive/{user_account_id}")
+	public ResponseEntity<?> archiveUserAccountById(@PathVariable("user_account_id") Long userAccountId) throws ServiceException {
+		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
+		userAccount.setArchived(!userAccount.isArchived());
+		this.userAccountService.update(userAccount);
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
 
 	@CrossOrigin
 	@DeleteMapping(value = "/{user_account_id}")
