@@ -16,9 +16,7 @@ public class PhotoDto {
     private String title;
     private String photoUrl;
     private byte[] photoBytes;
-    private boolean isProfilePicture;
     private LocationDto location;
-    private UserAccountDto userAccount;
     private FormatDto format;
     private List<TransformationDto> photoTransformations;
 }

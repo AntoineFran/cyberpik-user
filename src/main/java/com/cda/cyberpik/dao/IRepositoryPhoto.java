@@ -4,6 +4,4 @@ import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IRepositoryPhoto extends JpaRepository<Photo, Long> {
-    public void deleteByUserAccount(UserAccount userAccount);
-}
+public interface IRepositoryPhoto extends JpaRepository<Photo, Long> {}
