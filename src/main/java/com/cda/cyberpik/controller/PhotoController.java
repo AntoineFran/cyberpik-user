@@ -6,6 +6,7 @@ import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
+import com.cda.cyberpik.service.UserAccountService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/images")
@@ -24,6 +26,9 @@ public class PhotoController {
 
     @Autowired
     FormatService formatService;
+
+    @Autowired
+    UserAccountService userAccountService;
 
     @CrossOrigin
     @GetMapping(path = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -39,7 +44,7 @@ public class PhotoController {
 
     @CrossOrigin
     @PostMapping(path = "/")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException, ServiceException {
 
         // TODO: use authentication to get user account id
 
@@ -69,14 +74,14 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
         }
 
-        UserAccountDto userAccount = new UserAccountDto();
-        userAccount.setUserAccountId(1L);
+        UserAccountDto userAccount = userAccountService.getById(1L);
 
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
-        photo.setUserAccount(userAccount);
         photo.setTitle(filename);
         photo.setPhotoBytes(file.getBytes());
+
+
 
         Long imageId = photoService.upload(photo);
 
