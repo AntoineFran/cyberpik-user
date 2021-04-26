@@ -34,9 +34,6 @@ values ('jpg');
 insert into format (name)
 values ('jpeg');
 
-insert into format (name)
-values ('png');
-
 
 
 insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
