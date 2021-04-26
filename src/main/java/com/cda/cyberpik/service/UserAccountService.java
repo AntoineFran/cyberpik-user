@@ -1,9 +1,11 @@
 package com.cda.cyberpik.service;
 
+import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
+import com.sun.xml.bind.v2.runtime.output.SAXOutput;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ public class UserAccountService implements IService<UserAccountDto> {
 
     @Autowired
     private IRepositoryUserAccount userAccountDao;
+
+    @Autowired
+    private IRepositoryPhoto photoDao;
 
     @Override
     public List<UserAccountDto> getAll() {
@@ -40,20 +45,12 @@ public class UserAccountService implements IService<UserAccountDto> {
 
     public boolean getByUserName(String userName) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
-        if (userOpt.isPresent()) {
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
-        }
+        return userOpt.isPresent();
     }
 
     public boolean getByEmail(String email) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(email);
-        if (userOpt.isPresent()) {
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
-        }
+        return userOpt.isPresent();
     }
 
     public UserAccountDto getByEmailAndPassword(String email, String password) throws ServiceException {
@@ -68,12 +65,15 @@ public class UserAccountService implements IService<UserAccountDto> {
     @Override
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        this.userAccountDao.save(this.modelMapper.map(o, UserAccount.class));
+        UserAccount op = this.modelMapper.map(o, UserAccount.class);
+        System.out.println(op);
+        this.userAccountDao.save(op);
     }
 
     @Override
     public void deleteById(long id) throws ServiceException {
-        this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        UserAccount userAccount = this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        this.photoDao.deleteByUserAccount(userAccount);
         this.userAccountDao.deleteById(id);
     }
 

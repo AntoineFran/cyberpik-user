@@ -6,19 +6,18 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import com.cda.cyberpik.dto.CityDto;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserAccountDto {
     private Long userAccountId;
     private String userName;
-    private String password;
     private String email;
+    private String password;
+    private String location;
+    private boolean enableNewsletter;
     private boolean isArchived;
     private boolean isAdmin;
-    private boolean enableNewsletter;
-    private CityDto city;
     private List<PhotoForUserAccountDto> photos;
+    private PhotoForUserAccountDto profilePhoto;
 }
