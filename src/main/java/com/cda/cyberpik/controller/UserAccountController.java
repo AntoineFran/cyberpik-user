@@ -79,8 +79,7 @@ public class UserAccountController {
 	@CrossOrigin
     @PatchMapping(value = "/{user_account_id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUserAccountById(@PathVariable("user_account_id") Long userAccountId, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
-		UserAccountDto userAccount;
-		userAccount = this.userAccountService.getById(userAccountId);
+		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccountUpdated.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccountUpdated.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
@@ -119,7 +118,7 @@ public class UserAccountController {
 	@PatchMapping(value = "/archive/{user_account_id}")
 	public ResponseEntity<?> archiveUserAccountById(@PathVariable("user_account_id") Long userAccountId) throws ServiceException {
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
-		userAccount.setArchived(!userAccount.isArchived());
+		userAccount.setArchived(true);
 		this.userAccountService.update(userAccount);
 		return new ResponseEntity(HttpStatus.OK);
 	}

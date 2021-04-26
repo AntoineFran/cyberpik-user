@@ -2,14 +2,7 @@ package com.cda.cyberpik.entity;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,10 +40,11 @@ public class UserAccount {
 
     private String location;
     
-    @OneToMany(cascade=ALL, mappedBy="userAccount")
+    @OneToMany(cascade=ALL)
+    @JoinColumn(name = "user_account_id")
 	private List<Photo> photos;
 
     @OneToOne
     @JoinColumn(name="photo_profile_id")
-    private Photo profile_photo;
+    private Photo profilePhoto;
 }

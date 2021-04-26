@@ -47,23 +47,23 @@ values ('cochin.valentin42@gmail.com', false, false, true, 'pedro', 'pedro', 'Me
 
 
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (true, NULL, 'https://images.unsplash.com/photo-1606542758304-820b04394ac2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80', 'Foo', 1, 1, 1);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1606542758304-820b04394ac2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80', 'Foo', 1, 1, 3);
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1580428180163-76ab1efe2aed?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8cG9ydHJhaXQlMjBjeWJlcnB1bmt8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60', 'filtered_photo_1', 1, 2, 1);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1580428180163-76ab1efe2aed?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8cG9ydHJhaXQlMjBjeWJlcnB1bmt8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60', 'filtered_photo_1', 1, 2, 1);
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1568668392383-58c369615742?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=661&q=80', 'cyber_eiffel', 2, 3, 2);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1568668392383-58c369615742?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=661&q=80', 'cyber_eiffel', 2, 3, 2);
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1555109307-f7d9da25c244?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1053&q=80', 'cyber_empire', 2, 4, 3);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1555109307-f7d9da25c244?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1053&q=80', 'cyber_empire', 2, 2, 2);
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1531279550271-23c2a77a765c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80', 'cyber_hong_kong', 2, 1, 1);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1531279550271-23c2a77a765c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80', 'cyber_hong_kong', 2, 1, 1);
 
-insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1558961166-9c584702dcb0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80', 'cyber_street', 2, 2, 2);
+insert into photo (photo_bytes, photo_url, title, format_id, location_id, user_account_id)
+values (NULL, 'https://images.unsplash.com/photo-1558961166-9c584702dcb0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80', 'cyber_street', 2, 2, 2);
 
 
 

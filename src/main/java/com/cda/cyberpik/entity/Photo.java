@@ -25,18 +25,11 @@ public class Photo {
     @Lob
     @Column(name = "photo_bytes")
     private byte[] photoBytes;
-    
-    @Column(name = "is_profile_picture", nullable = false)
-    private boolean isProfilePicture;
 
     @OneToOne
     @JoinColumn(name="location_id")
     private Location location;
-    
-    @ManyToOne
-    @JoinColumn(name="user_account_id", nullable=false)
-    private UserAccount userAccount;
-    
+
     @ManyToOne
     @JoinColumn(name="format_id", nullable=false)
     private Format format;
