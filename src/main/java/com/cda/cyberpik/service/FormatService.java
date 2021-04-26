@@ -3,6 +3,7 @@ package com.cda.cyberpik.service;
 import com.cda.cyberpik.dao.IRepositoryFormat;
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.entity.Format;
+import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,14 @@ public class FormatService implements IService<FormatDto> {
     @Override
     public void add(FormatDto o) {
         this.formatDao.save(this.modelMapper.map(o, Format.class));
+    }
+
+    public FormatDto getFormatByName(String name) throws ServiceException {
+        Optional<Format> formatOpt = this.formatDao.findFormatByName(name);
+        if (formatOpt.isPresent()) {
+            return this.modelMapper.map(formatOpt.get(), FormatDto.class);
+        } else {
+            throw new ServiceException("Format not found");
+        }
     }
 }
