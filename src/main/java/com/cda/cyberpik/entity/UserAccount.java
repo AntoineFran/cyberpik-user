@@ -44,11 +44,13 @@ public class UserAccount {
     
     @Column(name = "enable_newsletter")
     private boolean enableNewsletter;
-    
-    @OneToOne
-    @JoinColumn(name="city_id")
-    private City city;
+
+    private String location;
     
     @OneToMany(cascade=ALL, mappedBy="userAccount")
 	private List<Photo> photos;
+
+    @OneToOne
+    @JoinColumn(name="photo_profile_id")
+    private Photo profile_photo;
 }
