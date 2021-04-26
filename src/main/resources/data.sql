@@ -1,31 +1,3 @@
-insert into country (name)
-values ('France');
-
-insert into country (name)
-values ('USA');
-
-insert into country (name)
-values ('China');
-
-
-
-insert into city (name, country_id)
-values ('Bergues', 1);
-
-insert into city (name, country_id)
-values ('Dunkerque', 1);
-
-insert into city (name, country_id)
-values ('Lille', 1);
-
-insert into city (name, country_id)
-values ('New-York', 2);
-
-insert into city (name, country_id)
-values ('Beijing', 3);
-
-
-
 insert into location (latitude, longitude)
 values (50.63253537832229, 3.0710044149376303);
 
@@ -67,14 +39,14 @@ values ('png');
 
 
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, city_id)
-values ('cochin.valentin@hotmail.fr', false, false, false, 'valou', 'valou', 1);
+insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
+values ('cochin.valentin@hotmail.fr', false, false, false, 'valou', 'valou', 'Dunkerque, France');
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, city_id)
-values ('francois.antoine3@gmail.com', true, true, false, 'antoine', 'antoine', 3);
+insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
+values ('francois.antoine3@gmail.com', true, true, false, 'antoine', 'antoine', 'Lille, France');
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, city_id)
-values ('cochin.valentin42@gmail.com', false, false, true, 'pedro', 'pedro', 4);
+insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
+values ('cochin.valentin42@gmail.com', false, false, true, 'pedro', 'pedro', 'Mexico City - Mexico');
 
 
 
@@ -82,7 +54,7 @@ insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id,
 values (true, NULL, 'https://images.unsplash.com/photo-1606542758304-820b04394ac2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80', 'Foo', 1, 1, 1);
 
 insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
-values (false, NULL, 'https://images.unsplash.com/photo-1613046885331-97757b9e47c2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=701&q=80', 'filtered_photo_1', 1, 2, 1);
+values (false, NULL, 'https://images.unsplash.com/photo-1580428180163-76ab1efe2aed?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8cG9ydHJhaXQlMjBjeWJlcnB1bmt8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60', 'filtered_photo_1', 1, 2, 1);
 
 insert into photo (is_profile_picture, photo_bytes, photo_url, title, format_id, location_id, user_account_id)
 values (false, NULL, 'https://images.unsplash.com/photo-1568668392383-58c369615742?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=661&q=80', 'cyber_eiffel', 2, 3, 2);
@@ -105,3 +77,11 @@ insert into photo_transformations (photo_id, transformation_id) values (2, 1);
 insert into photo_transformations (photo_id, transformation_id) values (3, 2);
 
 insert into photo_transformations (photo_id, transformation_id) values (4, 1);
+
+
+
+update user_account set photo_profile_id = 2 where user_account_id = 1;
+
+update user_account set photo_profile_id = 4 where user_account_id = 2;
+
+update user_account set photo_profile_id = 1 where user_account_id = 3;
