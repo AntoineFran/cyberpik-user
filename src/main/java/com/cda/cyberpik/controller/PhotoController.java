@@ -62,7 +62,9 @@ public class PhotoController {
         }
 
         FormatDto format = new FormatDto();
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String filename = file.getOriginalFilename();
+        String extension = FilenameUtils.getExtension(filename);
+
         try {
             format = formatService.getFormatByName(extension);
         } catch (ServiceException e) {
@@ -75,6 +77,7 @@ public class PhotoController {
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
         photo.setUserAccount(userAccount);
+        photo.setTitle(filename);
         photo.setPhotoBytes(file.getBytes());
 
         Long imageId = photoService.upload(photo);
