@@ -6,7 +6,6 @@ import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
-import com.cda.cyberpik.service.TransformationService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,8 +37,6 @@ public class PhotoController {
                 .body(bytes);
     }
 
-
-
     @CrossOrigin
     @PostMapping(path = "/")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
@@ -68,6 +65,7 @@ public class PhotoController {
         try {
             format = formatService.getFormatByName(extension);
         } catch (ServiceException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
         }
 
