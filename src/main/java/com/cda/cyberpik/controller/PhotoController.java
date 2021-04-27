@@ -2,10 +2,11 @@ package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
-import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
+import com.cda.cyberpik.dto.UserAccountPhotosDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
+import com.cda.cyberpik.service.UploadPhotoService;
 import com.cda.cyberpik.service.UserAccountService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class PhotoController {
 
     @Autowired
     UserAccountService userAccountService;
+
+    @Autowired
+    UploadPhotoService uploadPhotoService;
 
     @CrossOrigin
     @GetMapping(path = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -74,14 +78,18 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
         }
 
-        UserAccountDto userAccount = userAccountService.getById(1L);
+        UserAccountPhotosDto userAccount = uploadPhotoService.getById(1L);
 
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
         photo.setTitle(filename);
         photo.setPhotoBytes(file.getBytes());
 
+        List<PhotoDto> photos = userAccount.getPhotos();
+        photos.add(photo);
+        userAccount.setPhotos(photos);
 
+        this.uploadPhotoService.update(userAccount);
 
         Long imageId = photoService.upload(photo);
 
