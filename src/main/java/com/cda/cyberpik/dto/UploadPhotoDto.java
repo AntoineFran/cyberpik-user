@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAccountPhotosDto {
+public class UploadPhotoDto {
     private Long userAccountId;
     private List<PhotoDto> photos;
 }

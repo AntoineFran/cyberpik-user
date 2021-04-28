@@ -2,7 +2,7 @@ package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
-import com.cda.cyberpik.dto.UserAccountPhotosDto;
+import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
@@ -49,8 +49,7 @@ public class PhotoController {
     @CrossOrigin
     @PostMapping(path = "/")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException, ServiceException {
-        // TODO: too slow when uploading multiple images
-        // TODO: improve code quality of this method
+        // TODO: too slow when uploading multiple images -> solve this
         // TODO: use authentication to get user account id
 
         //        public ResponseEntity<String> createNewAlert(@RequestBody NoListAlertDTO newALert, Authentication authentication) {
@@ -85,12 +84,12 @@ public class PhotoController {
         photo.setTitle(filenameWithoutExtension);
         photo.setPhotoBytes(file.getBytes());
 
-        UserAccountPhotosDto userAccount = uploadPhotoService.getById(1L);
-        List<PhotoDto> photos = userAccount.getPhotos();
+        UploadPhotoDto userAccountPhotos = uploadPhotoService.getById(1L);
+        List<PhotoDto> photos = userAccountPhotos.getPhotos();
         photos.add(photo);
-        userAccount.setPhotos(photos);
+        userAccountPhotos.setPhotos(photos);
 
-        Long imageId = uploadPhotoService.upload(userAccount);
+        Long imageId = uploadPhotoService.upload(userAccountPhotos);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
