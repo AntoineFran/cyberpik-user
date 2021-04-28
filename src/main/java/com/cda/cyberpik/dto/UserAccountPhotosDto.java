@@ -1,6 +1,5 @@
 package com.cda.cyberpik.dto;
 
-import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

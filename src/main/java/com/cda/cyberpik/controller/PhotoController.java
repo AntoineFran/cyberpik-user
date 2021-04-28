@@ -89,9 +89,8 @@ public class PhotoController {
         photos.add(photo);
         userAccount.setPhotos(photos);
 
-        this.uploadPhotoService.update(userAccount);
-
-        Long imageId = photoService.upload(photo);
+        uploadPhotoService.update(userAccount);
+        Long imageId = photo.getPhotoId();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
