@@ -57,10 +57,7 @@ public class PhotoController {
         //                newALert.getBike().setImage(null);
         //            }
         //            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        //            System.out.println(((MyUserDetails) userDetails).getId());
-        //            newALert.setPerson(PersonDTO.builder().personId(((MyUserDetails) userDetails).getId()).build());
-        //            this.alertService.add(newALert);
-        //            return ResponseEntity.status(HttpStatus.OK).body("Alert created");
+        //            System.out.println(((MyUserDetails) userDetails).getId());;
         //        }
 
         if (file.isEmpty()) {
