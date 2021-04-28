@@ -68,10 +68,11 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("File is empty");
         }
 
-        FormatDto format = new FormatDto();
         String filename = file.getOriginalFilename();
         String extension = FilenameUtils.getExtension(filename);
+        String filenameWithoutExtension = FilenameUtils.removeExtension(filename);
 
+        FormatDto format = new FormatDto();
         try {
             format = formatService.getFormatByName(extension);
         } catch (ServiceException e) {
@@ -79,13 +80,12 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
         }
 
-        UserAccountPhotosDto userAccount = uploadPhotoService.getById(1L);
-
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
-        photo.setTitle(filename);
+        photo.setTitle(filenameWithoutExtension);
         photo.setPhotoBytes(file.getBytes());
 
+        UserAccountPhotosDto userAccount = uploadPhotoService.getById(1L);
         List<PhotoDto> photos = userAccount.getPhotos();
         photos.add(photo);
         userAccount.setPhotos(photos);
