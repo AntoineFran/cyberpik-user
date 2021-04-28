@@ -2,10 +2,11 @@ package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
-import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
+import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
+import com.cda.cyberpik.service.UploadPhotoService;
 import com.cda.cyberpik.service.UserAccountService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class PhotoController {
     @Autowired
     UserAccountService userAccountService;
 
+    @Autowired
+    UploadPhotoService uploadPhotoService;
+
     @CrossOrigin
     @GetMapping(path = "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long id) throws IOException, ServiceException {
@@ -45,7 +49,7 @@ public class PhotoController {
     @CrossOrigin
     @PostMapping(path = "/")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException, ServiceException {
-
+        // TODO: too slow when uploading multiple images -> solve this
         // TODO: use authentication to get user account id
 
         //        public ResponseEntity<String> createNewAlert(@RequestBody NoListAlertDTO newALert, Authentication authentication) {
@@ -53,20 +57,18 @@ public class PhotoController {
         //                newALert.getBike().setImage(null);
         //            }
         //            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        //            System.out.println(((MyUserDetails) userDetails).getId());
-        //            newALert.setPerson(PersonDTO.builder().personId(((MyUserDetails) userDetails).getId()).build());
-        //            this.alertService.add(newALert);
-        //            return ResponseEntity.status(HttpStatus.OK).body("Alert created");
+        //            System.out.println(((MyUserDetails) userDetails).getId());;
         //        }
 
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("File is empty");
         }
 
-        FormatDto format = new FormatDto();
         String filename = file.getOriginalFilename();
         String extension = FilenameUtils.getExtension(filename);
+        String filenameWithoutExtension = FilenameUtils.removeExtension(filename);
 
+        FormatDto format = new FormatDto();
         try {
             format = formatService.getFormatByName(extension);
         } catch (ServiceException e) {
@@ -74,16 +76,17 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
         }
 
-        UserAccountDto userAccount = userAccountService.getById(1L);
-
         PhotoDto photo = new PhotoDto();
         photo.setFormat(format);
-        photo.setTitle(filename);
+        photo.setTitle(filenameWithoutExtension);
         photo.setPhotoBytes(file.getBytes());
 
+        UploadPhotoDto userAccountPhotos = uploadPhotoService.getById(1L);
+        List<PhotoDto> photos = userAccountPhotos.getPhotos();
+        photos.add(photo);
+        userAccountPhotos.setPhotos(photos);
 
-
-        Long imageId = photoService.upload(photo);
+        Long imageId = uploadPhotoService.upload(userAccountPhotos);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

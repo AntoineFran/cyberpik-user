@@ -53,10 +53,4 @@ public class PhotoService implements IService<PhotoDto> {
     public void add(PhotoDto o) {
         throw new UnsupportedOperationException("Not implemented, use upload method instead");
     }
-
-    public Long upload(PhotoDto o) {
-        Photo photo = this.photoDao.save(this.modelMapper.map(o, Photo.class));
-        photo = this.photoDao.save(photo);
-        return photo.getPhotoId();
-    }
 }
