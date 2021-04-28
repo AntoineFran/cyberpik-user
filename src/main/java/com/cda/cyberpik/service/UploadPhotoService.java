@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class UploadPhotoService implements IService<UserAccountPhotosDto>{
     }
 
     @Override
+    @Transactional
     public UserAccountPhotosDto getById(long id) throws ServiceException {
         Optional<UserAccount> userOpt = this.userAccountDao.findById(id);
         if (userOpt.isPresent()) {
@@ -44,9 +46,7 @@ public class UploadPhotoService implements IService<UserAccountPhotosDto>{
 
     @Override
     public void update(UserAccountPhotosDto o) throws ServiceException {
-        UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        op.setPhotos(modelMapper.map(o, UserAccount.class).getPhotos());
-        this.userAccountDao.save(op);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -59,10 +59,12 @@ public class UploadPhotoService implements IService<UserAccountPhotosDto>{
         throw new UnsupportedOperationException();
     }
 
-//    public Long upload(UserAccountPhotosDto o) throws ServiceException {
-//        UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
-//        op.setPhotos(modelMapper.map(o, UserAccount.class).getPhotos());
-//        this.userAccountDao.save(op);
-//        return photo.getPhotoId();
-//    }
+    public Long upload(UserAccountPhotosDto o) throws ServiceException {
+        UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        op.setPhotos(modelMapper.map(o, UserAccount.class).getPhotos());
+        UserAccount userAccount = this.userAccountDao.save(op);
+        List<Photo> photos = userAccount.getPhotos();
+        Photo photoCreated = photos.get(photos.size() - 1);
+        return photoCreated.getPhotoId();
+    }
 }

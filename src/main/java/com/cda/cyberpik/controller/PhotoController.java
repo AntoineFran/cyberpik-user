@@ -49,7 +49,8 @@ public class PhotoController {
     @CrossOrigin
     @PostMapping(path = "/")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException, ServiceException {
-
+        // TODO: too slow when uploading multiple images
+        // TODO: improve code quality of this method
         // TODO: use authentication to get user account id
 
         //        public ResponseEntity<String> createNewAlert(@RequestBody NoListAlertDTO newALert, Authentication authentication) {
@@ -89,8 +90,7 @@ public class PhotoController {
         photos.add(photo);
         userAccount.setPhotos(photos);
 
-        uploadPhotoService.update(userAccount);
-        Long imageId = photo.getPhotoId();
+        Long imageId = uploadPhotoService.upload(userAccount);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
