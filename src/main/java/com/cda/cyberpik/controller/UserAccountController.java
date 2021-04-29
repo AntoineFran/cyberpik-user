@@ -1,17 +1,16 @@
 package com.cda.cyberpik.controller;
 
-import java.util.List;
-import java.util.Map;
 
 import com.cda.cyberpik.exception.ControllerException;
+import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
 import com.cda.cyberpik.security.service.IJwtTokenService;
 import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +32,7 @@ import com.cda.cyberpik.service.UserAccountService;
 
 @Validated
 @RestController
-@RequestMapping("/cyberpik/user_accounts")
+@RequestMapping("/user_accounts")
 public class UserAccountController {
 
 	@Autowired
@@ -62,18 +60,21 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@GetMapping(value = {"", "/"})
-	public ResponseEntity<UserAccountDto> findUserAccountById(Authentication authentication) throws ServiceException {
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-		System.out.println(userAccountId);
-		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
+	public ResponseEntity<UserAccountDto> findUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
+		if(authentication == null){
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+			Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+			System.out.println(userAccountId);
+			return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) throws ControllerException {
-       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
-       userAccount.setPassword(encodePassword);
+		String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
+       	userAccount.setPassword(encodePassword);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccount.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccount.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
@@ -108,7 +109,10 @@ public class UserAccountController {
 
 	@CrossOrigin
     @PatchMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUserAccountById(Authentication authentication, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
+    public ResponseEntity<?> updateUserAccountById(Authentication authentication, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException, InvalidTokenException {
+		if(authentication == null){
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 		System.out.println(userAccountId);
@@ -152,7 +156,10 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@PatchMapping(value = "/archive")
-	public ResponseEntity<?> archiveUserAccountById(Authentication authentication) throws ServiceException {
+	public ResponseEntity<?> archiveUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
+		if(authentication == null){
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 		System.out.println(userAccountId);
@@ -165,7 +172,10 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@DeleteMapping(value = "/")
-	public ResponseEntity<?> deleteUserAccountById(Authentication authentication) throws ServiceException {
+	public ResponseEntity<?> deleteUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
+		if(authentication == null){
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 		System.out.println(userAccountId);

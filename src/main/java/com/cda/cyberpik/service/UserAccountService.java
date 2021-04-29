@@ -65,8 +65,8 @@ public class UserAccountService implements IService<UserAccountDto> {
     @Override
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        UserAccount op = this.modelMapper.map(o, UserAccount.class);
-        this.userAccountDao.save(op);
+        UserAccount userAccount = this.modelMapper.map(o, UserAccount.class);
+        this.userAccountDao.save(userAccount);
     }
 
     @Override
