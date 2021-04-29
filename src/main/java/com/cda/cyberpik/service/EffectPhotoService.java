@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 public class EffectPhotoService implements IEffectService<PhotoDto> {
@@ -14,6 +15,7 @@ public class EffectPhotoService implements IEffectService<PhotoDto> {
 
     @Override
     public PhotoDto apply(PhotoDto o, String effectName) throws ServiceException {
+        // TODO: add error handling
         String originalPhotoId= o.getPhotoId().toString();
         String uriStr = String.join("", "/images/", originalPhotoId);
 
@@ -23,6 +25,7 @@ public class EffectPhotoService implements IEffectService<PhotoDto> {
                 .accept(MediaType.IMAGE_JPEG)
                 .retrieve()
                 .bodyToMono(byte[].class)
+                .log()
                 .block();
 
         PhotoDto transformedImage = new PhotoDto();
