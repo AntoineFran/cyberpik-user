@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cda.cyberpik.exception.InvalidTokenException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,12 @@ public class JwtUtil {
 	@Value("${com.cda.cyberpik.jwt.key}")
 	private String jwtKey;
 
-	public String extractUsername(String token) {
-		return extractClaim(token, Claims::getSubject);
+	public String extractUsername(String token) throws InvalidTokenException {
+		try {
+			return extractClaim(token, Claims::getSubject);
+		} catch (JwtException e){
+			return null;
+		}
 	}
 
 	public Date extractExpiration(String token) {
@@ -54,9 +61,19 @@ public class JwtUtil {
 				.signWith(SignatureAlgorithm.HS512, jwtKey).compact();
 	}
 
-	public Boolean validateToken(String token, UserDetails userDetails) {
+	public Boolean validateToken(String token, UserDetails userDetails) throws InvalidTokenException {
 		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		Boolean isUsernameValid = false;
+		Boolean isTokenValid = false;
+
+		try{
+			isUsernameValid = username.equals(userDetails.getUsername());
+			isTokenValid = !isTokenExpired(token);
+		} catch (Exception e) {
+			return false;
+		}
+
+		return (isUsernameValid && isTokenValid);
 	}
 
 	private boolean isTokenExpired(String token) {

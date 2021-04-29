@@ -1,6 +1,7 @@
 package com.cda.cyberpik.security.filter;
 
 
+import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.security.utils.JwtUtil;
 import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
 
@@ -30,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
     @Override
 
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws  ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
@@ -39,19 +40,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
             	username = jwtUtil.extractUsername(jwt);
-            } catch (ExpiredJwtException e ) {
+            } catch (ExpiredJwtException | InvalidTokenException e ) {
             	username = null;
             }
         }
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(jwt,userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null,userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            try {
+                if(jwtUtil.validateToken(jwt,userDetails)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null,userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            } catch (InvalidTokenException e) {
+                logger.error(e.getMessage());
             }
         }
         filterChain.doFilter(request, response);
