@@ -4,11 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.cda.cyberpik.exception.ControllerException;
+import com.cda.cyberpik.security.dto.MyUserDetails;
+import com.cda.cyberpik.security.service.IJwtTokenService;
+import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,35 +32,50 @@ import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.UserAccountService;
 
+@Validated
 @RestController
 @RequestMapping("/cyberpik/user_accounts")
 public class UserAccountController {
 
 	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private IJwtTokenService jwtTokenService;
+
+	@Autowired
 	UserAccountService userAccountService;
 
-//    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+	@Autowired
+	UserDetailsServiceImpl userDetailsService;
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    /**
+	@Secured({"ROLE_ADMIN"})
 	@CrossOrigin
 	@GetMapping(value = {"", "/"})
 	public ResponseEntity<List<UserAccountDto>> findAllUserAccounts() {
 		return new ResponseEntity(this.userAccountService.getAll(), HttpStatus.OK);
 	}
+	 **/
 
 	@CrossOrigin
-	@GetMapping(value = "/{user_account_id}")
-	public ResponseEntity<?> findUserAccountById(@PathVariable("user_account_id") Long userAccountId)
-			throws ServiceException {
+	@GetMapping(value = {"", "/"})
+	public ResponseEntity<UserAccountDto> findUserAccountById(Authentication authentication) throws ServiceException {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		System.out.println(userAccountId);
 		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createNewUserAccount(@RequestBody UserAccountDto userAccount) throws ControllerException {
-//       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
-//       userAccount.setPassword(encodePassword);
-		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccount.getUserName());
-		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccount.getEmail());
+       String encodePassword = this.bCryptPasswordEncoder.encode(userAccount.getPassword());
+       userAccount.setPassword(encodePassword);
+		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccount.getUserName());
+		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccount.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
 			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
 		} else if (userNameAlreadyExisting){
@@ -64,24 +88,35 @@ public class UserAccountController {
 		}
 	}
 
-	@CrossOrigin
-	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserAccountDto> findUserAccountByEmailAndPassword(@RequestBody Map<String, String> emailPassword) throws ControllerException {
-		UserAccountDto userAccount;
-		try {
-			 userAccount = this.userAccountService.getByEmailAndPassword(emailPassword.get("email"), emailPassword.get("password"));
-		} catch (ServiceException e) {
-			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong email and/or wrong password");
-		}
-		return new ResponseEntity(userAccount, HttpStatus.OK);
-	}
 
 	@CrossOrigin
-    @PatchMapping(value = "/{user_account_id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUserAccountById(@PathVariable("user_account_id") Long userAccountId, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
+	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> authenticate(@RequestBody MyUserDetails loginDetails) throws ControllerException {
+		UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+				loginDetails.getUsername(), loginDetails.getPassword());
+		System.out.println(loginDetails);
+		Authentication authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
+		System.out.println(authentication);
+
+		if (authentication != null && authentication.isAuthenticated()) {
+			String tokens = jwtTokenService.createTokens(authentication);
+			return new ResponseEntity(tokens, HttpStatus.OK);
+		}
+		throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong email and/or wrong password");
+	}
+
+
+	@CrossOrigin
+    @PatchMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateUserAccountById(Authentication authentication, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		System.out.println(userAccountId);
+		System.out.println(userAccountUpdated);
+
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
-		boolean userNameAlreadyExisting = this.userAccountService.getByUserName(userAccountUpdated.getUserName());
-		boolean emailAlreadyExisting = this.userAccountService.getByEmail(userAccountUpdated.getEmail());
+		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
+		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccountUpdated.getEmail());
 		if (userNameAlreadyExisting && emailAlreadyExisting){
 			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
 		} else if (userNameAlreadyExisting){
@@ -97,7 +132,8 @@ public class UserAccountController {
 				userAccount.setEmail(userAccountUpdated.getEmail());
 			}
 			if (userAccountUpdated.getPassword() != null && !userAccountUpdated.getPassword().equals("")) {
-				userAccount.setPassword(userAccountUpdated.getPassword());
+                String encodePassword = this.bCryptPasswordEncoder.encode(userAccountUpdated.getPassword());
+                userAccount.setPassword(encodePassword);
 			}
 			if (userAccountUpdated.getLocation() != null) {
 				userAccount.setLocation(userAccountUpdated.getLocation());
@@ -115,19 +151,25 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
-	@PatchMapping(value = "/archive/{user_account_id}")
-	public ResponseEntity<?> archiveUserAccountById(@PathVariable("user_account_id") Long userAccountId) throws ServiceException {
+	@PatchMapping(value = "/archive")
+	public ResponseEntity<?> archiveUserAccountById(Authentication authentication) throws ServiceException {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		System.out.println(userAccountId);
+
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		userAccount.setArchived(true);
 		this.userAccountService.update(userAccount);
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
-
 	@CrossOrigin
-	@DeleteMapping(value = "/{user_account_id}")
-	public ResponseEntity<?> deleteUserAccountById(@PathVariable("user_account_id") Long userAccountId)
-			throws ServiceException {
+	@DeleteMapping(value = "/")
+	public ResponseEntity<?> deleteUserAccountById(Authentication authentication) throws ServiceException {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		System.out.println(userAccountId);
+
 		this.userAccountService.deleteById(userAccountId);
 		return new ResponseEntity(HttpStatus.OK);
 	}

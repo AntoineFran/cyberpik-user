@@ -43,12 +43,12 @@ public class UserAccountService implements IService<UserAccountDto> {
         }
     }
 
-    public boolean getByUserName(String userName) {
+    public boolean verifyByUserName(String userName) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
         return userOpt.isPresent();
     }
 
-    public boolean getByEmail(String email) {
+    public boolean verifyByEmail(String email) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(email);
         return userOpt.isPresent();
     }
