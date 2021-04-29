@@ -7,17 +7,13 @@ import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -32,11 +28,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) {
         if (!ObjectUtils.isEmpty(userName)) {
-            UserAccount userAccount = userAccountDao.findUserAccountByUserName(userName)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return new MyUserDetails(userAccount);
+            Optional<UserAccount> userAccountOpt = userAccountDao.findUserAccountByUserName(userName);
+            if (userAccountOpt.isPresent()) {
+            return new MyUserDetails(userAccountOpt.get());
+            }else {
+                return null;
+            }
         } else {
-            throw new UsernameNotFoundException("username is empty");
+            return null;
         }
     }
 
