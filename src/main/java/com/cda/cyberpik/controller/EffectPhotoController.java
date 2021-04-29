@@ -1,5 +1,6 @@
 package com.cda.cyberpik.controller;
 
+import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.EffectPhotoService;
 import com.cda.cyberpik.service.PhotoService;
@@ -17,16 +18,15 @@ public class EffectPhotoController {
     PhotoService photoService;
 
     @Autowired
-    UploadPhotoService uploadPhotoService;
-
-    @Autowired
     EffectPhotoService effectPhotoService;
 
     @CrossOrigin
     @GetMapping(path = "/{effectName}/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]>  getTransformedImage(@PathVariable("effectName") String effectName, @PathVariable("imageId") Long id) throws ServiceException {
-        byte[] bytes = new byte[0];
+        PhotoDto originalPhoto = photoService.getById(id);
 
+        PhotoDto transformedPhoto = effectPhotoService.apply(originalPhoto, effectName);
+        byte[] bytes = transformedPhoto.getPhotoBytes();
 
         return ResponseEntity
                 .ok()

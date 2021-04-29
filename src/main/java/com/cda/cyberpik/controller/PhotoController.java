@@ -47,7 +47,7 @@ public class PhotoController {
     }
 
     @CrossOrigin
-    @PostMapping(path = "/")
+    @PostMapping(path = {"","/"})
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException, ServiceException {
         // TODO: too slow when uploading multiple images -> solve this
         // TODO: use authentication to get user account id
