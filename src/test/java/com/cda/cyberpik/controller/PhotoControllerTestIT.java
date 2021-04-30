@@ -1,19 +1,14 @@
 package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.CyberpikApplication;
-import com.cda.cyberpik.CyberpikApplicationTests;
 import com.cda.cyberpik.dao.IRepositoryFormat;
-import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
 import com.cda.cyberpik.entity.Format;
 import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.ArrayList;
