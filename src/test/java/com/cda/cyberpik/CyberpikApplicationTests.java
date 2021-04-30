@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
-@Configuration
+// @Configuration
 public class CyberpikApplicationTests {
 
 	public static void main(String[] args) {

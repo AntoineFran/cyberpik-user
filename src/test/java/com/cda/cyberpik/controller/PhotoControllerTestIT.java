@@ -1,6 +1,8 @@
 package com.cda.cyberpik.controller;
 
+import com.cda.cyberpik.CyberpikApplication;
 import com.cda.cyberpik.CyberpikApplicationTests;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,8 @@ import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = CyberpikApplicationTests.class)
-public class PhotoControllerTest {
+@SpringBootTest(classes = CyberpikApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class PhotoControllerTestIT {
     @Autowired
     private WebTestClient webTestClient;
 
