@@ -93,17 +93,26 @@ public class UserAccountController {
 	@CrossOrigin
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> authenticate(@RequestBody MyUserDetails loginDetails) throws ControllerException {
-		UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+		boolean doesUserAccountExist = userAccountService.verifyByUserName(loginDetails.getUsername());
+	    if(!doesUserAccountExist){
+            throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
+        }
+	    UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				loginDetails.getUsername(), loginDetails.getPassword());
 		System.out.println(loginDetails);
-		Authentication authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
+		Authentication authentication;
+		try {
+			authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
+		} catch(Exception e) {
+			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
+		}
 		System.out.println(authentication);
 
 		if (authentication != null && authentication.isAuthenticated()) {
 			String tokens = jwtTokenService.createTokens(authentication);
 			return new ResponseEntity(tokens, HttpStatus.OK);
 		}
-		throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong email and/or wrong password");
+		throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
 	}
 
 
