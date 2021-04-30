@@ -9,6 +9,7 @@ import com.sun.xml.bind.v2.runtime.output.SAXOutput;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     }
 
     @Override
+    @Transactional
     public UserAccountDto getById(long id) throws ServiceException {
         Optional<UserAccount> userOpt = this.userAccountDao.findById(id);
         if (userOpt.isPresent()) {
