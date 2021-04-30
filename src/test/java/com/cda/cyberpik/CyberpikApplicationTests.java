@@ -6,38 +6,34 @@ import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
-@SpringBootTest
-class CyberpikApplicationTests {
-	@Autowired
-	private IRepositoryPhoto photoDao;
+@Configuration
+public class CyberpikApplicationTests {
 
-	@Autowired
-	private IRepositoryUserAccount userAccountDao;
-
-/**
-	@Test
-	void contextLoads() {
-		Optional<Photo> photo1 = photoDao.findById(5L);
-		if (photo1.isPresent()){
-			System.out.println(photo1.get().getPhotoId());
-		}
+	public static void main(String[] args) {
+		SpringApplication.run(CyberpikApplication.class, args);
 	}
 
-	@Test
-	void test2() {
-
-		Optional<UserAccount> op = this.userAccountDao.findById(5L);
-
-		if(op.isPresent()){
-			System.out.println(op.get().getUserAccountId());
-		}
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
 	}
-**/
 
-
+	@Bean
+	public WebClient webClient() {
+		return WebClient.builder()
+				.baseUrl("http://localhost:8080/cyberpik")
+				.build();
+	}
 }
+
