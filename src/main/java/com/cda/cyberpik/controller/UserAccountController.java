@@ -66,7 +66,6 @@ public class UserAccountController {
 		}
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-			System.out.println(userAccountId);
 			return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
@@ -99,14 +98,12 @@ public class UserAccountController {
         }
 	    UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				loginDetails.getUsername(), loginDetails.getPassword());
-		System.out.println(loginDetails);
 		Authentication authentication;
 		try {
 			authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
 		} catch(Exception e) {
 			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
 		}
-		System.out.println(authentication);
 
 		if (authentication != null && authentication.isAuthenticated()) {
 			String tokens = jwtTokenService.createTokens(authentication);
@@ -124,9 +121,6 @@ public class UserAccountController {
 		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-		System.out.println(userAccountId);
-		System.out.println(userAccountUpdated);
-
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccountUpdated.getEmail());
@@ -157,7 +151,6 @@ public class UserAccountController {
 			if (userAccountUpdated.getProfilePhoto() != null) {
 				userAccount.setProfilePhoto(userAccountUpdated.getProfilePhoto());
 			}
-			System.out.println(userAccount);
 			this.userAccountService.update(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
 		}
@@ -171,7 +164,6 @@ public class UserAccountController {
 		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-		System.out.println(userAccountId);
 
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		userAccount.setArchived(true);
@@ -187,7 +179,6 @@ public class UserAccountController {
 		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-		System.out.println(userAccountId);
 
 		this.userAccountService.deleteById(userAccountId);
 		return new ResponseEntity(HttpStatus.OK);
