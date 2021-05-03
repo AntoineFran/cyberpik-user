@@ -3,7 +3,9 @@ package com.cda.cyberpik.controller;
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.dto.UploadPhotoDto;
+import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.exception.ServiceException;
+import com.cda.cyberpik.security.dto.MyUserDetails;
 import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
 import com.cda.cyberpik.service.UploadPhotoService;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,6 +48,20 @@ public class PhotoController {
                 .ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(bytes);
+    }
+
+    @CrossOrigin
+    @GetMapping(path = {"", "/"})
+    public ResponseEntity<List<PhotoDto>> getImagesByUserAccountId(Authentication authentication) throws InvalidTokenException {
+        if(authentication == null){
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+        List<PhotoDto> photos = this.photoService.getAllByUserAccountId(userAccountId);
+        return ResponseEntity
+                .ok()
+                .body(photos);
     }
 
     @CrossOrigin
