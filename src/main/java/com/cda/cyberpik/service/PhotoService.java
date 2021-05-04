@@ -1,12 +1,15 @@
 package com.cda.cyberpik.service;
 
 import com.cda.cyberpik.dao.IRepositoryPhoto;
+import com.cda.cyberpik.dao.IRepositoryUserAccount;
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.entity.Photo;
+import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +23,27 @@ public class PhotoService implements IService<PhotoDto> {
     @Autowired
     private IRepositoryPhoto photoDao;
 
+    @Autowired
+    private IRepositoryUserAccount userAccountDao;
+
     @Override
     public List<PhotoDto> getAll() {
         List<PhotoDto> photos = new ArrayList<>();
         this.photoDao.findAll().forEach(photo -> photos.add(this.modelMapper.map(photo, PhotoDto.class)));
         return photos;
+    }
+
+    @Transactional
+    public List<Long> getAllPhotosIdByUserAccountId(Long id) throws ServiceException {
+        List<Long> photosId = new ArrayList<>();
+        Optional<UserAccount> userAccountOpt = this.userAccountDao.findById(id);
+        if (userAccountOpt.isPresent()){    
+            List<Photo> photos = userAccountOpt.get().getPhotos();
+            photos.forEach(photo -> photosId.add(photo.getPhotoId()));
+            return photosId;
+        } else {
+            throw new ServiceException("Photo not found");
+        }
     }
 
     @Override

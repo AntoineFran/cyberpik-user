@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 @SpringBootTest(classes = CyberpikApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserAccountControllerTestIT {
@@ -57,7 +58,8 @@ public class UserAccountControllerTestIT {
                 .isEqualTo(HttpStatus.OK)
                 .returnResult(void.class);
     }
-/**
+
+    /**
     @Test
     public void ShoudLogin(){
         String userNamePassword = "test1";
@@ -67,7 +69,7 @@ public class UserAccountControllerTestIT {
         UserAccount userAccount1 = new UserAccount();
         userAccount1.setUserName(userNamePassword);
         userAccount1.setEmail("test1@email.com");
-        userAccount1.setPassword(userNamePassword);
+        userAccount1.setPassword(encodePassword);
         userAccountDao.save(userAccount1);
 
         userAccountDao.findAll().forEach(userAccount -> System.out.println(userAccount.getUserName() + " - " + userAccount.getPassword()));
@@ -89,6 +91,32 @@ public class UserAccountControllerTestIT {
                 .isEqualTo(HttpStatus.OK)
                 .returnResult(String.class);
     }
-    **/
 
+ @Test
+    public void ShoudGetUserByToken(){
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbnRvaW5lIiwidXNlcm5hbWUiOiJhbnRvaW5lIiwicm9sZXMiOiJBRE1JTiIsImV4cCI6MTYxOTk3NjA5NSwiaWF0IjoxNjE5OTcyNDk1fQ.QQU_-qVNEZCt2718GYOI0gOjKVDaMvAxV0BNAz_U_qNApXIqUyKqSIs3ZNEH6NIaVudCRPBmiNo1hrRWrFFJEw";
+        var userCreationResponse = this.webTestClient
+                .get()
+                .uri("/user_accounts/", "Bearer " + token)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.OK)
+                .returnResult(UserAccountDto.class);
+    }
+
+ @Test
+    public void ShoudDeleteUserByToken(){
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbnRvaW5lIiwidXNlcm5hbWUiOiJhbnRvaW5lIiwicm9sZXMiOiJBRE1JTiIsImV4cCI6MTYxOTk3NjA5NSwiaWF0IjoxNjE5OTcyNDk1fQ.QQU_-qVNEZCt2718GYOI0gOjKVDaMvAxV0BNAz_U_qNApXIqUyKqSIs3ZNEH6NIaVudCRPBmiNo1hrRWrFFJEw";
+        var userCreationResponse = this.webTestClient
+                .delete()
+                .uri("/user_accounts/", "Bearer " + token)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.OK);
+    }
+**/
 }
