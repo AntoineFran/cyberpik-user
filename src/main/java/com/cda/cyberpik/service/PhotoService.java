@@ -9,6 +9,7 @@ import com.cda.cyberpik.exception.ServiceException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +33,17 @@ public class PhotoService implements IService<PhotoDto> {
         return photos;
     }
 
-    public List<PhotoDto> getAllByUserAccountId(Long id) {
-        List<PhotoDto> photos = new ArrayList<>();
+    @Transactional
+    public List<Long> getAllPhotosIdByUserAccountId(Long id) throws ServiceException {
+        List<Long> photosId = new ArrayList<>();
         Optional<UserAccount> userAccountOpt = this.userAccountDao.findById(id);
-        if (userAccountOpt.isPresent()){
-            List<Photo> photoEntities = userAccountOpt.get().getPhotos();
-            photoEntities.forEach(photo -> photos.add(this.modelMapper.map(photo, PhotoDto.class)));
+        if (userAccountOpt.isPresent()){    
+            List<Photo> photos = userAccountOpt.get().getPhotos();
+            photos.forEach(photo -> photosId.add(photo.getPhotoId()));
+            return photosId;
+        } else {
+            throw new ServiceException("Photo not found");
         }
-        return photos;
     }
 
     @Override

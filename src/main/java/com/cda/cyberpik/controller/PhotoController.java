@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -52,16 +53,17 @@ public class PhotoController {
 
     @CrossOrigin
     @GetMapping(path = {"", "/"})
-    public ResponseEntity<List<PhotoDto>> getImagesByUserAccountId(Authentication authentication) throws InvalidTokenException {
+    public ResponseEntity<List<Long>> getImagesByUserAccountId(Authentication authentication) throws InvalidTokenException, ServiceException {
         if(authentication == null){
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-        List<PhotoDto> photos = this.photoService.getAllByUserAccountId(userAccountId);
+
+        List<Long> photosId = this.photoService.getAllPhotosIdByUserAccountId(userAccountId);
         return ResponseEntity
                 .ok()
-                .body(photos);
+                .body(photosId);
     }
 
     @CrossOrigin
