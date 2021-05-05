@@ -26,7 +26,7 @@ public class Photo {
     @Column(name = "photo_bytes")
     private byte[] photoBytes;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="location_id")
     private Location location;
 
@@ -34,7 +34,7 @@ public class Photo {
     @JoinColumn(name="format_id", nullable=false)
     private Format format;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "photo_transformations",
             joinColumns = @JoinColumn(name = "photo_id"),
