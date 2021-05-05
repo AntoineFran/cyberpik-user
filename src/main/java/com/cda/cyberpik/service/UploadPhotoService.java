@@ -1,6 +1,9 @@
 package com.cda.cyberpik.service;
 
+import com.cda.cyberpik.dao.IRepositoryLocation;
+import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
+import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
@@ -22,6 +25,12 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
     @Autowired
     private IRepositoryUserAccount userAccountDao;
 
+    @Autowired
+    private IRepositoryPhoto photoDao;
+
+    @Autowired
+    private IRepositoryLocation locationDao;
+
     @Override
     @Transactional
     public UploadPhotoDto getById(long id) throws ServiceException {
@@ -41,5 +50,19 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         List<Photo> photos = userAccount.getPhotos();
         Photo photoCreated = photos.get(photos.size() - 1);
         return photoCreated.getPhotoId();
+    }
+
+    @Transactional
+    public void removePhoto(UploadPhotoDto o, PhotoDto photo) throws ServiceException {
+        UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        List<Photo> photos = modelMapper.map(o, UserAccount.class).getPhotos();
+
+        Long locationID = photo.getLocation().getLocationId();
+        if(locationID != null && locationID > 0) {
+            locationDao.deleteById(locationID);
+        }
+        photos.remove(0);
+        op.setPhotos(photos);
+        this.userAccountDao.save(op);
     }
 }
