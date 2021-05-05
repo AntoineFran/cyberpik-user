@@ -40,11 +40,11 @@ public class UserAccount {
 
     private String location;
     
-    @OneToMany(cascade=ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
 	private List<Photo> photos;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="photo_profile_id")
     private Photo profilePhoto;
 }

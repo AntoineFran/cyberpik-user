@@ -4,6 +4,7 @@ import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
+import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
@@ -124,5 +125,30 @@ public class PhotoController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(imageId);
+    }
+
+
+    @CrossOrigin
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deletePhotoById(Authentication authentication, @PathVariable("id") Long id) throws ServiceException, InvalidTokenException {
+        if(authentication == null){
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+
+
+        List<Long> photosId = new ArrayList<>();
+        UploadPhotoDto userAccountPhotos = uploadPhotoService.getById(userAccountId);
+        List<PhotoDto> photos = userAccountPhotos.getPhotos();
+        photos.forEach(photo -> photosId.add(photo.getPhotoId()));
+
+        if(!photosId.contains(id)){
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+        }else {
+            PhotoDto photo = photoService.getById(id);
+            uploadPhotoService.removePhoto(userAccountPhotos, photo);
+            return new ResponseEntity(HttpStatus.OK);
+        }
     }
 }
