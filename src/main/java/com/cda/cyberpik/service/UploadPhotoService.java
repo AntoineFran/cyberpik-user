@@ -58,17 +58,27 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         List<Photo> photosOp = modelMapper.map(o, UserAccount.class).getPhotos();
         Long photoId = photo.getPhotoId();
         List<Photo> photos = new ArrayList<>();
-        Long locationID = photo.getLocation().getLocationId();
 
-        if(locationID != null && locationID > 0) {
+        Long locationID = 0L;
+        try{
+            locationID = photo.getLocation().getLocationId();
+        } catch (Exception e) {
+        }
+        if(locationID != 0L) {
             locationDao.deleteById(locationID);
         }
 
-        photosOp.stream()
-                .filter(photoOp -> photoOp.getPhotoId() != photoId)
-                .forEach(photoOp -> photos.add(photoOp));
+        if(photosOp.size() >= 2) {
+            photosOp.stream()
+                    .filter(photoOp -> photoOp.getPhotoId() != photoId)
+                    .forEach(photoOp -> photos.add(photoOp));
 
-        op.setPhotos(photos);
+            op.setPhotos(photos);
+        } else if(photosOp.size() == 1 && photosOp.get(0).getPhotoId().equals(photoId)) {
+            op.setPhotos(null);
+        } else {
+            throw new ServiceException("Photo not found");
+        }
         this.userAccountDao.save(op);
         this.photoDao.deleteById(photoId);
     }
