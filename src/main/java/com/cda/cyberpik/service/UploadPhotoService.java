@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,17 +53,23 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         return photoCreated.getPhotoId();
     }
 
-    @Transactional
     public void removePhoto(UploadPhotoDto o, PhotoDto photo) throws ServiceException {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        List<Photo> photos = modelMapper.map(o, UserAccount.class).getPhotos();
-
+        List<Photo> photosOp = modelMapper.map(o, UserAccount.class).getPhotos();
+        Long photoId = photo.getPhotoId();
+        List<Photo> photos = new ArrayList<>();
         Long locationID = photo.getLocation().getLocationId();
+
         if(locationID != null && locationID > 0) {
             locationDao.deleteById(locationID);
         }
-        photos.remove(0);
+
+        photosOp.stream()
+                .filter(photoOp -> photoOp.getPhotoId() != photoId)
+                .forEach(photoOp -> photos.add(photoOp));
+
         op.setPhotos(photos);
         this.userAccountDao.save(op);
+        this.photoDao.deleteById(photoId);
     }
 }
