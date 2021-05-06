@@ -29,6 +29,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     private IRepositoryPhoto photoDao;
 
     @Override
+    @Transactional
     public List<UserAccountDto> getAll() {
         List<UserAccountDto> users = new ArrayList<>();
         this.userAccountDao.findAll().forEach(user -> users.add(this.modelMapper.map(user, UserAccountDto.class)));
@@ -46,16 +47,19 @@ public class UserAccountService implements IService<UserAccountDto> {
         }
     }
 
+    @Transactional
     public boolean verifyByUserName(String userName) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
         return userOpt.isPresent();
     }
 
+    @Transactional
     public boolean verifyByEmail(String email) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(email);
         return userOpt.isPresent();
     }
 
+    @Transactional
     public UserAccountDto getByEmailAndPassword(String email, String password) throws ServiceException {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmailAndPassword(email, password);
         if (userOpt.isPresent()) {
@@ -66,20 +70,16 @@ public class UserAccountService implements IService<UserAccountDto> {
     }
 
     @Override
+    @Transactional
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         UserAccount userAccount = this.modelMapper.map(o, UserAccount.class);
         this.userAccountDao.save(userAccount);
     }
 
-    public void updateProfilePicture(Long userAccountId, Long photoId) throws ServiceException {
-        UserAccount userAccount = this.userAccountDao.findById(userAccountId).orElseThrow(() -> new ServiceException("UserAccount not found"));
-        Photo profilePicture = this.photoDao.findById(photoId).orElseThrow(() -> new ServiceException("Photo not found"));
-        userAccount.setProfilePhoto(profilePicture);
-        this.userAccountDao.save(userAccount);
-    }
 
     @Override
+    @Transactional
     public void deleteById(long id) throws ServiceException {
         UserAccount userAccount = this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
         this.userAccountDao.deleteById(id);

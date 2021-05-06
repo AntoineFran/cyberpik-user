@@ -44,6 +44,7 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
     }
 
     @Override
+    @Transactional
     public Long upload(UploadPhotoDto o) throws ServiceException {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         op.setPhotos(modelMapper.map(o, UserAccount.class).getPhotos());
@@ -53,6 +54,9 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         return photoCreated.getPhotoId();
     }
 
+
+    @Override
+    @Transactional
     public void removePhoto(UploadPhotoDto o, PhotoDto photo) throws ServiceException {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         List<Photo> photosOp = modelMapper.map(o, UserAccount.class).getPhotos();

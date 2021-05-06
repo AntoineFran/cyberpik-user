@@ -1,13 +1,18 @@
 package com.cda.cyberpik.controller;
 
 
+import com.cda.cyberpik.dto.FormatDto;
+import com.cda.cyberpik.dto.PhotoDto;
+import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
 import com.cda.cyberpik.exception.ControllerException;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
 import com.cda.cyberpik.security.service.IJwtTokenService;
 import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
+import com.cda.cyberpik.service.FormatService;
 import com.cda.cyberpik.service.PhotoService;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +28,9 @@ import org.springframework.web.bind.annotation.*;
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.UserAccountService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +51,9 @@ public class UserAccountController {
 
 	@Autowired
 	private PhotoService photoService;
+
+	@Autowired
+	private FormatService formatService;
 
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -151,12 +161,35 @@ public class UserAccountController {
 	}
 
 	@CrossOrigin
-	@PatchMapping(value = "/profile_picture/{id}")
-	public ResponseEntity<?> setProfilePicture(Authentication authentication, @PathVariable("id") Long id) throws InvalidTokenException, ServiceException {
-		Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
+	@PatchMapping(value = "/profile_picture")
+	public ResponseEntity<?> setProfilePicture(Authentication authentication, @RequestParam("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
+		Long userAccountId = checkAuthentication(authentication);
 
-		userAccountService.updateProfilePicture(userAccountId, id);
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("File is empty");
+		}
 
+		String filename = file.getOriginalFilename();
+		String extension = FilenameUtils.getExtension(filename);
+		String filenameWithoutExtension = FilenameUtils.removeExtension(filename);
+
+		FormatDto format = new FormatDto();
+		try {
+			format = formatService.getFormatByName(extension);
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Format not supported");
+		}
+
+		PhotoForUserAccountDto photo = new PhotoForUserAccountDto();
+		photo.setFormat(format);
+		photo.setTitle(filenameWithoutExtension);
+		photo.setPhotoBytes(file.getBytes());
+
+		UserAccountDto userAccountDto = userAccountService.getById(userAccountId);
+		userAccountDto.setProfilePhoto(photo);
+
+		userAccountService.update(userAccountDto);
 		return new ResponseEntity(HttpStatus.OK);
 	}
 

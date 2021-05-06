@@ -58,13 +58,6 @@ public class PhotoController {
     public ResponseEntity<byte[]> getImage(Authentication authentication, @PathVariable("id") Long id) throws InvalidTokenException, IOException, ServiceException {
         Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
 
-        List<Long> userPhotosIdList= new ArrayList<>();
-        userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
-
-        if(!userPhotosIdList.contains(id)){
-            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-        }
-
         PhotoDto photo;
         photo = photoService.getById(id);
         byte[] bytes = photo.getPhotoBytes();
@@ -192,8 +185,15 @@ public class PhotoController {
         List<Long> userPhotosIdList= new ArrayList<>();
 
         userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
+        Long profilePicture = 0L;
+        try {
+            profilePicture = userAccountService.getById(userAccountId).getProfilePhoto().getPhotoId();
+        } catch (Exception e) {
+        }
 
-        if(!userPhotosIdList.contains(id)) {
+        System.out.println("id : " + id + " user photo list : " + userPhotosIdList + " profile picture " + profilePicture);
+
+        if(!userPhotosIdList.contains(id) && profilePicture != id) {
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
         }
         return userAccountId;
