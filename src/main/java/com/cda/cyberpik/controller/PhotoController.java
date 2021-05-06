@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,14 +42,21 @@ public class PhotoController {
     @Autowired
     UploadPhotoService uploadPhotoService;
 
+
+    @CrossOrigin
+    @GetMapping(path = {"", "/"})
+    public ResponseEntity<List<Long>> getImagesByUserAccountId(Authentication authentication) throws InvalidTokenException, ServiceException {
+        Long userAccountId = checkAuthentication(authentication);
+        List<Long> photosId = this.photoService.getAllPhotosIdByUserAccountId(userAccountId);
+        return ResponseEntity
+                .ok()
+                .body(photosId);
+    }
+
     @CrossOrigin
     @GetMapping(path =  "/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(Authentication authentication, @PathVariable("id") Long id) throws InvalidTokenException, IOException, ServiceException {
-        if(authentication == null){
-            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+        Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
 
         List<Long> userPhotosIdList= new ArrayList<>();
         userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
@@ -67,18 +75,24 @@ public class PhotoController {
     }
 
     @CrossOrigin
-    @GetMapping(path = {"", "/"})
-    public ResponseEntity<List<Long>> getImagesByUserAccountId(Authentication authentication) throws InvalidTokenException, ServiceException {
-        if(authentication == null){
+    @GetMapping(path =  "/details/{id}")
+    public ResponseEntity<PhotoDto> getImageDetails(Authentication authentication, @PathVariable("id") Long id) throws InvalidTokenException, ServiceException {
+        Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
+
+        List<Long> userPhotosIdList= new ArrayList<>();
+        userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
+
+        if(!userPhotosIdList.contains(id)){
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
         }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 
-        List<Long> photosId = this.photoService.getAllPhotosIdByUserAccountId(userAccountId);
+        PhotoDto photo;
+        photo = photoService.getById(id);
+        photo.setPhotoBytes(null);
+
         return ResponseEntity
                 .ok()
-                .body(photosId);
+                .body(photo);
     }
 
     @CrossOrigin
@@ -86,13 +100,7 @@ public class PhotoController {
     public ResponseEntity<?> uploadImage(Authentication authentication, @RequestParam("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
         // TODO: too slow when uploading multiple images -> solve this
 
-
-        if(authentication == null){
-            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-
+        Long userAccountId = checkAuthentication(authentication);
 
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("File is empty");
@@ -129,14 +137,32 @@ public class PhotoController {
 
 
     @CrossOrigin
+    @PatchMapping(value= "/details/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updatePhotoDetails(Authentication authentication, @PathVariable("id") Long id, @RequestBody PhotoDto photoDetailsUpdated) throws ServiceException, InvalidTokenException {
+        Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
+
+        PhotoDto photo;
+        photo = photoService.getById(id);
+        photo.setPhotoBytes(null);
+
+        if (photoDetailsUpdated.getTitle() != null && !photoDetailsUpdated.getTitle().equals("")) {
+            photo.setTitle(photoDetailsUpdated.getTitle());
+        }
+        if (photoDetailsUpdated.getLocation() != null && !photoDetailsUpdated.getLocation().equals("")) {
+            photo.setLocation(photoDetailsUpdated.getLocation());
+        }
+
+        photoService.update(photo);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    @CrossOrigin
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deletePhotoById(Authentication authentication, @PathVariable("id") Long id) throws ServiceException, InvalidTokenException {
-        if(authentication == null){
-            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 
+        Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
 
         List<Long> photosId = new ArrayList<>();
         UploadPhotoDto userAccountPhotos = uploadPhotoService.getById(userAccountId);
@@ -150,5 +176,26 @@ public class PhotoController {
             uploadPhotoService.removePhoto(userAccountPhotos, photo);
             return new ResponseEntity(HttpStatus.OK);
         }
+    }
+
+    private Long checkAuthentication(Authentication authentication) throws InvalidTokenException {
+        if(authentication == null){
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+        return userAccountId;
+    }
+
+    private Long checkAuthenticationAndPhoto(Authentication authentication, Long id) throws InvalidTokenException, ServiceException {
+        Long userAccountId = checkAuthentication(authentication);
+
+        List<Long> userPhotosIdList= new ArrayList<>();
+            userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
+
+        if(!userPhotosIdList.contains(id)) {
+            throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+        }
+        return userAccountId;
     }
 }

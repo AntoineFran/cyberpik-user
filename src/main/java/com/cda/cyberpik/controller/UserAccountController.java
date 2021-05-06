@@ -121,6 +121,7 @@ public class UserAccountController {
 		}
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccountUpdated.getEmail());
