@@ -3,6 +3,7 @@ package com.cda.cyberpik.service;
 import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
+import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import com.sun.xml.bind.v2.runtime.output.SAXOutput;
@@ -68,6 +69,13 @@ public class UserAccountService implements IService<UserAccountDto> {
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         UserAccount userAccount = this.modelMapper.map(o, UserAccount.class);
+        this.userAccountDao.save(userAccount);
+    }
+
+    public void updateProfilePicture(Long userAccountId, Long photoId) throws ServiceException {
+        UserAccount userAccount = this.userAccountDao.findById(userAccountId).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        Photo profilePicture = this.photoDao.findById(photoId).orElseThrow(() -> new ServiceException("Photo not found"));
+        userAccount.setProfilePhoto(profilePicture);
         this.userAccountDao.save(userAccount);
     }
 

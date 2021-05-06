@@ -1,11 +1,13 @@
 package com.cda.cyberpik.controller;
 
 
+import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
 import com.cda.cyberpik.exception.ControllerException;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
 import com.cda.cyberpik.security.service.IJwtTokenService;
 import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
+import com.cda.cyberpik.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.UserAccountService;
-import com.cda.cyberpik.controller.AuthenticationVerification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Validated
@@ -36,12 +40,13 @@ public class UserAccountController {
 	private IJwtTokenService jwtTokenService;
 
 	@Autowired
-	UserAccountService userAccountService;
+	private UserAccountService userAccountService;
 
 	@Autowired
-	UserDetailsServiceImpl userDetailsService;
+	private PhotoService photoService;
 
-	private final AuthenticationVerification authenticationVerification = new AuthenticationVerification();
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -58,7 +63,7 @@ public class UserAccountController {
 	@CrossOrigin
 	@GetMapping(value = {"", "/"})
 	public ResponseEntity<UserAccountDto> findUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
+		Long userAccountId = checkAuthentication(authentication);
 		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
@@ -110,7 +115,7 @@ public class UserAccountController {
 	@CrossOrigin
     @PatchMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUserAccountById(Authentication authentication, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException, InvalidTokenException {
-		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
+		Long userAccountId = checkAuthentication(authentication);
 
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
@@ -145,11 +150,20 @@ public class UserAccountController {
 		}
 	}
 
+	@CrossOrigin
+	@PatchMapping(value = "/profile_picture/{id}")
+	public ResponseEntity<?> setProfilePicture(Authentication authentication, @PathVariable("id") Long id) throws InvalidTokenException, ServiceException {
+		Long userAccountId = checkAuthenticationAndPhoto(authentication, id);
+
+		userAccountService.updateProfilePicture(userAccountId, id);
+
+		return new ResponseEntity(HttpStatus.OK);
+	}
 
 	@CrossOrigin
 	@PatchMapping(value = "/archive")
 	public ResponseEntity<?> archiveUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
+		Long userAccountId = checkAuthentication(authentication);
 
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		userAccount.setArchived(true);
@@ -160,10 +174,33 @@ public class UserAccountController {
 	@CrossOrigin
 	@DeleteMapping(value = "/")
 	public ResponseEntity<?> deleteUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
+		Long userAccountId = checkAuthentication(authentication);
 
 		this.userAccountService.deleteById(userAccountId);
 		return new ResponseEntity(HttpStatus.OK);
 	}
+
+
+	public Long checkAuthentication(Authentication authentication) throws InvalidTokenException {
+		if(authentication == null){
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		return userAccountId;
+	}
+
+	public Long checkAuthenticationAndPhoto(Authentication authentication, Long id) throws InvalidTokenException, ServiceException {
+		Long userAccountId = checkAuthentication(authentication);
+		List<Long> userPhotosIdList= new ArrayList<>();
+
+		userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
+
+		if(!userPhotosIdList.contains(id)) {
+			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
+		}
+		return userAccountId;
+	}
+
 
 }
