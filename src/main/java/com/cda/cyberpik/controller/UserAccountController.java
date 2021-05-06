@@ -6,7 +6,6 @@ import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
 import com.cda.cyberpik.security.service.IJwtTokenService;
 import com.cda.cyberpik.security.service.UserDetailsServiceImpl;
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,18 +16,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.service.UserAccountService;
+import com.cda.cyberpik.controller.AuthenticationVerification;
+
 
 @Validated
 @RestController
@@ -47,7 +41,10 @@ public class UserAccountController {
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+	private final AuthenticationVerification authenticationVerification = new AuthenticationVerification();
+
+	private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
 
     /**
 	@Secured({"ROLE_ADMIN"})
@@ -61,12 +58,8 @@ public class UserAccountController {
 	@CrossOrigin
 	@GetMapping(value = {"", "/"})
 	public ResponseEntity<UserAccountDto> findUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		if(authentication == null){
-			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-		}
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
-			return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
+		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
+		return new ResponseEntity(this.userAccountService.getById(userAccountId), HttpStatus.OK);
 	}
 
 	@CrossOrigin
@@ -76,6 +69,7 @@ public class UserAccountController {
        	userAccount.setPassword(encodePassword);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccount.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccount.getEmail());
+
 		if (userNameAlreadyExisting && emailAlreadyExisting){
 			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
 		} else if (userNameAlreadyExisting){
@@ -116,11 +110,7 @@ public class UserAccountController {
 	@CrossOrigin
     @PatchMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUserAccountById(Authentication authentication, @RequestBody UserAccountDto userAccountUpdated) throws ServiceException, ControllerException, InvalidTokenException {
-		if(authentication == null){
-			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-		}
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
 
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
@@ -149,22 +139,17 @@ public class UserAccountController {
 			if (userAccountUpdated.isEnableNewsletter() != userAccount.isEnableNewsletter()) {
 				userAccount.setEnableNewsletter(userAccountUpdated.isEnableNewsletter());
 			}
-			if (userAccountUpdated.getProfilePhoto() != null) {
-				userAccount.setProfilePhoto(userAccountUpdated.getProfilePhoto());
-			}
+
 			this.userAccountService.update(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
 		}
 	}
 
+
 	@CrossOrigin
 	@PatchMapping(value = "/archive")
 	public ResponseEntity<?> archiveUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		if(authentication == null){
-			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-		}
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
 
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		userAccount.setArchived(true);
@@ -175,11 +160,7 @@ public class UserAccountController {
 	@CrossOrigin
 	@DeleteMapping(value = "/")
 	public ResponseEntity<?> deleteUserAccountById(Authentication authentication) throws ServiceException, InvalidTokenException {
-		if(authentication == null){
-			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-		}
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
+		Long userAccountId = authenticationVerification.checkAuthentication(authentication);
 
 		this.userAccountService.deleteById(userAccountId);
 		return new ResponseEntity(HttpStatus.OK);
