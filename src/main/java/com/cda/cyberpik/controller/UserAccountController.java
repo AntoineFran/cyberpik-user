@@ -189,8 +189,7 @@ public class UserAccountController {
 		UserAccountDto userAccountDto = userAccountService.getById(userAccountId);
 		if(userAccountDto.getProfilePhoto() != null) {
 			Long profilePictureId = userAccountDto.getProfilePhoto().getPhotoId();
-			userAccountDto.setProfilePhoto(null);
-			photoService.deleteById(profilePictureId);
+			userAccountService.deleteByProfilePicture(userAccountId, profilePictureId);
 		}
 		userAccountDto.setProfilePhoto(photo);
 

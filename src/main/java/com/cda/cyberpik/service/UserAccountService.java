@@ -77,6 +77,16 @@ public class UserAccountService implements IService<UserAccountDto> {
         this.userAccountDao.save(userAccount);
     }
 
+    @Transactional
+    public void deleteByProfilePicture(Long userAccountID, Long profilePhotoId) throws ServiceException {
+        UserAccount userAccount = this.userAccountDao.findById(userAccountID).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        this.photoDao.findById(profilePhotoId).orElseThrow(() -> new ServiceException("Photo not found"));
+
+        userAccount.setProfilePhoto(null);
+        userAccountDao.save(userAccount);
+        photoDao.deleteById(profilePhotoId);
+    }
+
 
     @Override
     @Transactional
