@@ -44,6 +44,7 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
     }
 
     @Override
+    @Transactional
     public Long upload(UploadPhotoDto o) throws ServiceException {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         op.setPhotos(modelMapper.map(o, UserAccount.class).getPhotos());
@@ -53,19 +54,22 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         return photoCreated.getPhotoId();
     }
 
+
+    @Override
+    @Transactional
     public void removePhoto(UploadPhotoDto o, PhotoDto photo) throws ServiceException {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         List<Photo> photosOp = modelMapper.map(o, UserAccount.class).getPhotos();
         Long photoId = photo.getPhotoId();
         List<Photo> photos = new ArrayList<>();
-
         Long locationID = 0L;
+
         try{
             locationID = photo.getLocation().getLocationId();
+            if(locationID != 0L) {
+                locationDao.deleteById(locationID);
+            }
         } catch (Exception e) {
-        }
-        if(locationID != 0L) {
-            locationDao.deleteById(locationID);
         }
 
         if(photosOp.size() >= 2) {
@@ -76,9 +80,11 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
             op.setPhotos(photos);
         } else if(photosOp.size() == 1 && photosOp.get(0).getPhotoId().equals(photoId)) {
             op.setPhotos(null);
+            op.setProfilePhoto(null);
         } else {
             throw new ServiceException("Photo not found");
         }
+
         this.userAccountDao.save(op);
         this.photoDao.deleteById(photoId);
     }

@@ -3,6 +3,7 @@ package com.cda.cyberpik.service;
 import com.cda.cyberpik.dao.IRepositoryPhoto;
 import com.cda.cyberpik.dao.IRepositoryUserAccount;
 import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
+import com.cda.cyberpik.entity.Photo;
 import com.cda.cyberpik.entity.UserAccount;
 import com.cda.cyberpik.exception.ServiceException;
 import com.sun.xml.bind.v2.runtime.output.SAXOutput;
@@ -28,6 +29,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     private IRepositoryPhoto photoDao;
 
     @Override
+    @Transactional
     public List<UserAccountDto> getAll() {
         List<UserAccountDto> users = new ArrayList<>();
         this.userAccountDao.findAll().forEach(user -> users.add(this.modelMapper.map(user, UserAccountDto.class)));
@@ -45,16 +47,19 @@ public class UserAccountService implements IService<UserAccountDto> {
         }
     }
 
+    @Transactional
     public boolean verifyByUserName(String userName) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
         return userOpt.isPresent();
     }
 
+    @Transactional
     public boolean verifyByEmail(String email) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(email);
         return userOpt.isPresent();
     }
 
+    @Transactional
     public UserAccountDto getByEmailAndPassword(String email, String password) throws ServiceException {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmailAndPassword(email, password);
         if (userOpt.isPresent()) {
@@ -65,13 +70,26 @@ public class UserAccountService implements IService<UserAccountDto> {
     }
 
     @Override
+    @Transactional
     public void update(UserAccountDto o) throws ServiceException {
         this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         UserAccount userAccount = this.modelMapper.map(o, UserAccount.class);
         this.userAccountDao.save(userAccount);
     }
 
+    @Transactional
+    public void deleteByProfilePicture(Long userAccountID, Long profilePhotoId) throws ServiceException {
+        UserAccount userAccount = this.userAccountDao.findById(userAccountID).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        this.photoDao.findById(profilePhotoId).orElseThrow(() -> new ServiceException("Photo not found"));
+
+        userAccount.setProfilePhoto(null);
+        userAccountDao.save(userAccount);
+        photoDao.deleteById(profilePhotoId);
+    }
+
+
     @Override
+    @Transactional
     public void deleteById(long id) throws ServiceException {
         UserAccount userAccount = this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
         this.userAccountDao.deleteById(id);
