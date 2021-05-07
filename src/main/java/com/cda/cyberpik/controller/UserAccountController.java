@@ -187,6 +187,11 @@ public class UserAccountController {
 		photo.setPhotoBytes(file.getBytes());
 
 		UserAccountDto userAccountDto = userAccountService.getById(userAccountId);
+		if(userAccountDto.getProfilePhoto() != null) {
+			Long profilePictureId = userAccountDto.getProfilePhoto().getPhotoId();
+			userAccountDto.setProfilePhoto(null);
+			photoService.deleteById(profilePictureId);
+		}
 		userAccountDto.setProfilePhoto(photo);
 
 		userAccountService.update(userAccountDto);

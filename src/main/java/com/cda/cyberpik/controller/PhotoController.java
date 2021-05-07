@@ -136,7 +136,6 @@ public class PhotoController {
 
         PhotoDto photo;
         photo = photoService.getById(id);
-        photo.setPhotoBytes(null);
 
         if (photoDetailsUpdated.getTitle() != null && !photoDetailsUpdated.getTitle().equals("")) {
             photo.setTitle(photoDetailsUpdated.getTitle());
@@ -191,7 +190,6 @@ public class PhotoController {
         } catch (Exception e) {
         }
 
-        System.out.println("id : " + id + " user photo list : " + userPhotosIdList + " profile picture " + profilePicture);
 
         if(!userPhotosIdList.contains(id) && profilePicture != id) {
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");

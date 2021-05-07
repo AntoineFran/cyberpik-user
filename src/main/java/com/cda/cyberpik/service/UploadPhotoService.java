@@ -61,17 +61,8 @@ public class UploadPhotoService implements IUploadService<UploadPhotoDto> {
         UserAccount op = this.userAccountDao.findById(o.getUserAccountId()).orElseThrow(() -> new ServiceException("UserAccount not found"));
         List<Photo> photosOp = modelMapper.map(o, UserAccount.class).getPhotos();
         Long photoId = photo.getPhotoId();
-        Long profilePhotoId = 0L;
-        Long locationID = 0L;
-
-        try{
-            profilePhotoId = op.getProfilePhoto().getPhotoId();
-            if(profilePhotoId == photoId){
-                op.setProfilePhoto(null);
-            }
-        } catch (Exception e){
-        }
         List<Photo> photos = new ArrayList<>();
+        Long locationID = 0L;
 
         try{
             locationID = photo.getLocation().getLocationId();
