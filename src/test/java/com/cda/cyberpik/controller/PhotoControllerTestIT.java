@@ -48,7 +48,6 @@ public class PhotoControllerTestIT {
         UserAccount userAccount = new UserAccount();
         userAccount.setUserAccountId(1L);
         userAccount.setEmail("cochin.valentin@hotmail.fr");
-        userAccount.setEnableNewsletter(false);
         userAccount.setAdmin(false);
         userAccount.setArchived(false);
         userAccount.setPassword("$2a$10$.DmbuvQ3p0wSXIKeR3/FpuzXjojZ0XphzntNGZ6QodL4FpkthyPVm");

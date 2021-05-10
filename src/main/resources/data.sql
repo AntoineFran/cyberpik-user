@@ -36,14 +36,14 @@ values ('jpeg');
 
 
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
-values ('cochin.valentin@hotmail.fr', false, false, false, '$2a$10$.DmbuvQ3p0wSXIKeR3/FpuzXjojZ0XphzntNGZ6QodL4FpkthyPVm', 'valou', 'Dunkerque, France');
+insert into user_account (email, is_admin, is_archived, password, user_name, location)
+values ('cochin.valentin@hotmail.fr', false, false, '$2a$10$.DmbuvQ3p0wSXIKeR3/FpuzXjojZ0XphzntNGZ6QodL4FpkthyPVm', 'valou', 'Dunkerque, France');
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
-values ('francois.antoine3@gmail.com', true, true, false, '$2a$10$nnuON3lAoiFgfr2nzMzlfe39Hsip4l2dgNWCv6bQZpSikAeZBxPXi', 'antoine', 'Lille, France');
+insert into user_account (email, is_admin, is_archived, password, user_name, location)
+values ('francois.antoine3@gmail.com', true, false, '$2a$10$nnuON3lAoiFgfr2nzMzlfe39Hsip4l2dgNWCv6bQZpSikAeZBxPXi', 'antoine', 'Lille, France');
 
-insert into user_account (email, enable_newsletter, is_admin, is_archived, password, user_name, location)
-values ('cochin.valentin42@gmail.com', false, false, true, '$2a$10$0bT1cIvVsVLyePN6T2duje49Tn29H/TH4kcsXxloLrlLgP1mrCQ1W', 'pedro', 'Mexico City - Mexico');
+insert into user_account (email, is_admin, is_archived, password, user_name, location)
+values ('cochin.valentin42@gmail.com', false, true, '$2a$10$0bT1cIvVsVLyePN6T2duje49Tn29H/TH4kcsXxloLrlLgP1mrCQ1W', 'pedro', 'Mexico City - Mexico');
 
 
 
