@@ -91,7 +91,7 @@ public class UserAccountService implements IService<UserAccountDto> {
     @Override
     @Transactional
     public void deleteById(long id) throws ServiceException {
-        UserAccount userAccount = this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
+        this.userAccountDao.findById(id).orElseThrow(() -> new ServiceException("UserAccount not found"));
         this.userAccountDao.deleteById(id);
     }
 
