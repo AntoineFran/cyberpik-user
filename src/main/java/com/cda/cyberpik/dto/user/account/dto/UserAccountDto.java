@@ -15,7 +15,6 @@ public class UserAccountDto {
     private String email;
     private String password;
     private String location;
-    private boolean enableNewsletter;
     private boolean isArchived;
     private boolean isAdmin;
     private List<PhotoForUserAccountDto> photos;

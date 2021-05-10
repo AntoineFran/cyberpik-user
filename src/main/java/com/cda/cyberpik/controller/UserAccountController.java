@@ -101,6 +101,7 @@ public class UserAccountController {
 	@CrossOrigin
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> authenticate(@RequestBody MyUserDetails loginDetails) throws ControllerException {
+		System.out.println(loginDetails);
 		boolean doesUserAccountExist = userAccountService.verifyByUserName(loginDetails.getUsername());
 	    if(!doesUserAccountExist){
             throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
@@ -110,6 +111,7 @@ public class UserAccountController {
 		Authentication authentication;
 		try {
 			authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
+			System.out.println("Auth :" + authentication);
 		} catch(Exception e) {
 			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
 		}
@@ -150,9 +152,6 @@ public class UserAccountController {
 			}
 			if (userAccountUpdated.getLocation() != null) {
 				userAccount.setLocation(userAccountUpdated.getLocation());
-			}
-			if (userAccountUpdated.isEnableNewsletter() != userAccount.isEnableNewsletter()) {
-				userAccount.setEnableNewsletter(userAccountUpdated.isEnableNewsletter());
 			}
 
 			this.userAccountService.update(userAccount);

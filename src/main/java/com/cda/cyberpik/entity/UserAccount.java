@@ -34,9 +34,6 @@ public class UserAccount {
     
     @Column(name = "is_admin")
     private boolean isAdmin = false;
-    
-    @Column(name = "enable_newsletter")
-    private boolean enableNewsletter;
 
     private String location;
     
