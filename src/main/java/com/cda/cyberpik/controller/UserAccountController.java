@@ -2,8 +2,6 @@ package com.cda.cyberpik.controller;
 
 
 import com.cda.cyberpik.dto.FormatDto;
-import com.cda.cyberpik.dto.PhotoDto;
-import com.cda.cyberpik.dto.UploadPhotoDto;
 import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
 import com.cda.cyberpik.exception.ControllerException;
 import com.cda.cyberpik.exception.InvalidTokenException;
@@ -31,8 +29,6 @@ import com.cda.cyberpik.service.UserAccountService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Validated
@@ -100,8 +96,7 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> authenticate(@RequestBody MyUserDetails loginDetails) throws ControllerException {
-		System.out.println(loginDetails);
+	public ResponseEntity<String> authenticate(@RequestBody MyUserDetails loginDetails) throws ControllerException {
 		boolean doesUserAccountExist = userAccountService.verifyByUserName(loginDetails.getUsername());
 	    if(!doesUserAccountExist){
             throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
@@ -111,7 +106,6 @@ public class UserAccountController {
 		Authentication authentication;
 		try {
 			authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
-			System.out.println("Auth :" + authentication);
 		} catch(Exception e) {
 			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
 		}
@@ -161,7 +155,7 @@ public class UserAccountController {
 
 	@CrossOrigin
 	@PatchMapping(value = "/profile_picture")
-	public ResponseEntity<?> setProfilePicture(Authentication authentication, @RequestParam("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
+	public ResponseEntity<?> setProfilePicture(Authentication authentication, @RequestPart("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
 		Long userAccountId = checkAuthentication(authentication);
 
 		if (file.isEmpty()) {
@@ -225,18 +219,4 @@ public class UserAccountController {
 		Long userAccountId = ((MyUserDetails) userDetails).getUserDetailsId();
 		return userAccountId;
 	}
-
-	public Long checkAuthenticationAndPhoto(Authentication authentication, Long id) throws InvalidTokenException, ServiceException {
-		Long userAccountId = checkAuthentication(authentication);
-		List<Long> userPhotosIdList= new ArrayList<>();
-
-		userAccountService.getById(userAccountId).getPhotos().forEach(photo -> userPhotosIdList.add(photo.getPhotoId()));
-
-		if(!userPhotosIdList.contains(id)) {
-			throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
-		}
-		return userAccountId;
-	}
-
-
 }

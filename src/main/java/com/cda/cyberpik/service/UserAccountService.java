@@ -59,16 +59,6 @@ public class UserAccountService implements IService<UserAccountDto> {
         return userOpt.isPresent();
     }
 
-    @Transactional
-    public UserAccountDto getByEmailAndPassword(String email, String password) throws ServiceException {
-        Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmailAndPassword(email, password);
-        if (userOpt.isPresent()) {
-            return this.modelMapper.map(userOpt.get(), UserAccountDto.class);
-        } else {
-            throw new ServiceException("Invalid Credits");
-        }
-    }
-
     @Override
     @Transactional
     public void update(UserAccountDto o) throws ServiceException {
