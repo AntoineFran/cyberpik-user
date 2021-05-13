@@ -197,10 +197,10 @@ public class UserAccountControllerTestIT {
     public void ShouldUpdateUserByToken(){
 
         UserAccountDto userAccountDtoUpdate = new UserAccountDto();
-        userAccountDtoUpdate.setUserName("test2");
-        userAccountDtoUpdate.setEmail("test2@email.com");
-        userAccountDtoUpdate.setPassword("test2");
-        userAccountDtoUpdate.setLocation("Lille");        userAccountDtoUpdate.setLocation("Lille");
+        userAccountDtoUpdate.setUserName("test3");
+        userAccountDtoUpdate.setEmail("test3@email.com");
+        userAccountDtoUpdate.setPassword("test3");
+        userAccountDtoUpdate.setLocation("Lille");
 
         this.webTestClient
                 .patch()
