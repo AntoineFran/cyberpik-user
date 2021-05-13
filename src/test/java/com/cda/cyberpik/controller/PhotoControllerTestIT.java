@@ -68,6 +68,7 @@ public class PhotoControllerTestIT {
                 .returnResult(void.class);
     }
 
+
     @Test
     @Order(2)
     public void ShouldLogin() throws ServiceException {
@@ -83,6 +84,7 @@ public class PhotoControllerTestIT {
                 .returnResult(String.class);
         token = userCreationResponse.getResponseBody().blockFirst();
     }
+
 
     @Test
     @Order(3)
@@ -102,6 +104,7 @@ public class PhotoControllerTestIT {
                 .isEqualTo(HttpStatus.OK);
     }
 
+
     @Test
     @Order(4)
     public void shouldGetListOfPhotos() {
@@ -116,6 +119,7 @@ public class PhotoControllerTestIT {
         imageId = userCreationResponse.getResponseBody().blockFirst();
     }
 
+
     @Test
     @Order(5)
     public void ShouldGetPhoto() {
@@ -129,6 +133,7 @@ public class PhotoControllerTestIT {
                 .returnResult(MultipartFile.class);
     }
 
+
     @Test
     @Order(6)
     public void ShouldGetPhotoDetails() {
@@ -141,6 +146,7 @@ public class PhotoControllerTestIT {
                 .isEqualTo(HttpStatus.OK)
                 .returnResult(PhotoDto.class);
     }
+
 
     @Test
     @Order(7)
@@ -157,6 +163,7 @@ public class PhotoControllerTestIT {
                 .expectStatus()
                 .isEqualTo(HttpStatus.OK);
     }
+
 
     @Test
     @Order(8)
