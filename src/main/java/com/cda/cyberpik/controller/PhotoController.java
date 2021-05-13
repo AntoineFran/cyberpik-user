@@ -3,8 +3,6 @@ package com.cda.cyberpik.controller;
 import com.cda.cyberpik.dto.FormatDto;
 import com.cda.cyberpik.dto.PhotoDto;
 import com.cda.cyberpik.dto.UploadPhotoDto;
-import com.cda.cyberpik.dto.user.account.dto.PhotoForUserAccountDto;
-import com.cda.cyberpik.dto.user.account.dto.UserAccountDto;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
@@ -90,7 +88,7 @@ public class PhotoController {
 
     @CrossOrigin
     @PostMapping(path = {"","/"})
-    public ResponseEntity<?> uploadImage(Authentication authentication, @RequestParam("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
+    public ResponseEntity<?> uploadImage(Authentication authentication, @RequestPart("file") MultipartFile file) throws IOException, ServiceException, InvalidTokenException {
         // TODO: too slow when uploading multiple images -> solve this
 
         Long userAccountId = checkAuthentication(authentication);
