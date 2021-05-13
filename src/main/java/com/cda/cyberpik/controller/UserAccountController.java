@@ -110,11 +110,8 @@ public class UserAccountController {
 			throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
 		}
 
-		if (authentication != null && authentication.isAuthenticated()) {
-			String tokens = jwtTokenService.createTokens(authentication);
-			return new ResponseEntity(tokens, HttpStatus.OK);
-		}
-		throw new ControllerException(HttpStatus.UNAUTHORIZED, "wrong username and/or wrong password");
+		String tokens = jwtTokenService.createTokens(authentication);
+		return new ResponseEntity(tokens, HttpStatus.OK);
 	}
 
 
@@ -126,14 +123,13 @@ public class UserAccountController {
 		UserAccountDto userAccount = this.userAccountService.getById(userAccountId);
 		boolean userNameAlreadyExisting = this.userAccountService.verifyByUserName(userAccountUpdated.getUserName());
 		boolean emailAlreadyExisting = this.userAccountService.verifyByEmail(userAccountUpdated.getEmail());
-		if (userNameAlreadyExisting && emailAlreadyExisting){
+		if (userNameAlreadyExisting && emailAlreadyExisting) {
 			throw new ControllerException(HttpStatus.CONFLICT, "username & email already taken");
-		} else if (userNameAlreadyExisting){
+		} else if (userNameAlreadyExisting) {
 			throw new ControllerException(HttpStatus.CONFLICT, "username already taken");
 		} else if (emailAlreadyExisting) {
 			throw new ControllerException(HttpStatus.CONFLICT, "email already taken");
 		} else {
-
 			if (userAccountUpdated.getUserName() != null && !userAccountUpdated.getUserName().equals("")) {
 				userAccount.setUserName(userAccountUpdated.getUserName());
 			}
@@ -141,13 +137,12 @@ public class UserAccountController {
 				userAccount.setEmail(userAccountUpdated.getEmail());
 			}
 			if (userAccountUpdated.getPassword() != null && !userAccountUpdated.getPassword().equals("")) {
-                String encodePassword = this.bCryptPasswordEncoder.encode(userAccountUpdated.getPassword());
-                userAccount.setPassword(encodePassword);
+				String encodePassword = this.bCryptPasswordEncoder.encode(userAccountUpdated.getPassword());
+				userAccount.setPassword(encodePassword);
 			}
 			if (userAccountUpdated.getLocation() != null) {
 				userAccount.setLocation(userAccountUpdated.getLocation());
 			}
-
 			this.userAccountService.update(userAccount);
 			return new ResponseEntity(HttpStatus.OK);
 		}
