@@ -39,7 +39,7 @@ public class EffectPhotoController {
 
     @CrossOrigin
     @GetMapping(path = "/{effectName}/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getTransformedImage(Authentication authentication, @PathVariable("effectName") String effectName, @PathVariable("imageId") Long id) throws ServiceException, InvalidTokenException {
+    public ResponseEntity<byte[]> getTransformedImage(Authentication authentication, @PathVariable("effectName") String effectName, @PathVariable("imageId") Long id, @RequestParam(required = false) String style) throws ServiceException, InvalidTokenException {
         if (authentication == null) {
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
         }
@@ -58,7 +58,7 @@ public class EffectPhotoController {
         byte[] bytes = originalPhoto.getPhotoBytes();
         String fileName = originalPhoto.getTitle() + '.' + originalPhoto.getFormat().getName();
 
-        byte[] transformedBytes = getTransformedImg(bytes, fileName);
+        byte[] transformedBytes = getTransformedImg(bytes, fileName, effectName, style);
 
         return ResponseEntity
                 .ok()
@@ -66,8 +66,8 @@ public class EffectPhotoController {
                 .body(transformedBytes);
     }
 
-    public byte[] getTransformedImg(byte[] bytes, String fileName) throws ServiceException {
-        String uriStr = "/effects/default";
+    public byte[] getTransformedImg(byte[] bytes, String fileName, String effectName, String style) throws ServiceException {
+        String uriStr = "/effects/?effect="+ effectName + "&style=" + style;
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("file", new ByteArrayResource(bytes))
                 .filename(fileName)
