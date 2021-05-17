@@ -21,7 +21,7 @@ public class CyberpikApplication {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/cyberpik")
+                .baseUrl("http://localhost:5001/api/v1")
                 .build();
     }
 }
