@@ -55,20 +55,24 @@ public class EffectPhotoController {
         }
 
         PhotoDto originalPhoto = photoService.getById(id);
+        byte[] bytes = originalPhoto.getPhotoBytes();
+        String fileName = originalPhoto.getTitle() + '.' + originalPhoto.getFormat().getName();
 
-        PhotoDto transformedPhoto = effectPhotoService.apply(originalPhoto, effectName);
-        byte[] bytes = transformedPhoto.getPhotoBytes();
+        byte[] transformedBytes = getTransformedImg(bytes, fileName);
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(bytes);
+                .body(transformedBytes);
     }
 
-    public byte[] getTransformedImg(byte[] bytes, String effectName) throws ServiceException {
-        String uriStr = String.join("", "/effects/", effectName);
+    public byte[] getTransformedImg(byte[] bytes, String fileName) throws ServiceException {
+        String uriStr = "/effects/default";
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("file", new ByteArrayResource(bytes)).header("Content-Disposition", "form-data; name=profileImage; filename=profile-image.jpg");
+        bodyBuilder.part("file", new ByteArrayResource(bytes))
+                .filename(fileName)
+                .contentType(MediaType.IMAGE_JPEG);
+
 
         byte[] transformedImgBytes = webClient
                 .post()
@@ -78,7 +82,6 @@ public class EffectPhotoController {
                 .accept(MediaType.IMAGE_JPEG)
                 .retrieve()
                 .bodyToMono(byte[].class)
-                .log()
                 .block();
 
         return transformedImgBytes;
