@@ -5,7 +5,6 @@ import com.cda.cyberpik.exception.ControllerException;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
-import com.cda.cyberpik.service.EffectPhotoService;
 import com.cda.cyberpik.service.PhotoService;
 import com.cda.cyberpik.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
