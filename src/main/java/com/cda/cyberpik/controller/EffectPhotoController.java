@@ -1,10 +1,10 @@
 package com.cda.cyberpik.controller;
 
 import com.cda.cyberpik.dto.PhotoDto;
+import com.cda.cyberpik.exception.ControllerException;
 import com.cda.cyberpik.exception.InvalidTokenException;
 import com.cda.cyberpik.exception.ServiceException;
 import com.cda.cyberpik.security.dto.MyUserDetails;
-import com.cda.cyberpik.service.EffectPhotoService;
 import com.cda.cyberpik.service.PhotoService;
 import com.cda.cyberpik.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +34,9 @@ public class EffectPhotoController {
     @Autowired
     UserAccountService userAccountService;
 
-    @Autowired
-    EffectPhotoService effectPhotoService;
-
     @CrossOrigin
     @GetMapping(path = "/{effectName}/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getTransformedImage(Authentication authentication, @PathVariable("effectName") String effectName, @PathVariable("imageId") Long id, @RequestParam(required = false) String style) throws ServiceException, InvalidTokenException {
+    public ResponseEntity<byte[]> getTransformedImage(Authentication authentication, @PathVariable("effectName") String effectName, @PathVariable("imageId") Long id, @RequestParam(required = false) String style) throws ServiceException, InvalidTokenException, ControllerException {
         if (authentication == null) {
             throw new InvalidTokenException(HttpStatus.UNAUTHORIZED, "You need to login");
         }
@@ -58,7 +55,15 @@ public class EffectPhotoController {
         byte[] bytes = originalPhoto.getPhotoBytes();
         String fileName = originalPhoto.getTitle() + '.' + originalPhoto.getFormat().getName();
 
-        byte[] transformedBytes = getTransformedImg(bytes, fileName, effectName, style);
+        byte[] transformedBytes;
+
+        // TODO: handle errors with WebClient
+        try {
+            transformedBytes = getTransformedImg(bytes, fileName, effectName, style);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ControllerException(HttpStatus.BAD_REQUEST, "Something went wrong with your request");
+        }
 
         return ResponseEntity
                 .ok()
@@ -66,13 +71,12 @@ public class EffectPhotoController {
                 .body(transformedBytes);
     }
 
-    public byte[] getTransformedImg(byte[] bytes, String fileName, String effectName, String style) throws ServiceException {
-        String uriStr = "/effects/?effect="+ effectName + "&style=" + style;
+    private byte[] getTransformedImg(byte[] bytes, String fileName, String effectName, String style) {
+        String uriStr = "/effects/?effect=" + effectName + "&style=" + style;
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("file", new ByteArrayResource(bytes))
                 .filename(fileName)
                 .contentType(MediaType.IMAGE_JPEG);
-
 
         byte[] transformedImgBytes = webClient
                 .post()
