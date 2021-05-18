@@ -35,9 +35,6 @@ public class EffectPhotoController {
     @Autowired
     UserAccountService userAccountService;
 
-    @Autowired
-    EffectPhotoService effectPhotoService;
-
     @CrossOrigin
     @GetMapping(path = "/{effectName}/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getTransformedImage(Authentication authentication, @PathVariable("effectName") String effectName, @PathVariable("imageId") Long id, @RequestParam(required = false) String style) throws ServiceException, InvalidTokenException, ControllerException {
