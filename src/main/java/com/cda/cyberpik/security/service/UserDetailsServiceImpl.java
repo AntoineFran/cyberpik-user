@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private IRepositoryUserAccount userAccountDao;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String userName) {
         if (!ObjectUtils.isEmpty(userName)) {
             Optional<UserAccount> userAccountOpt = userAccountDao.findUserAccountByUserName(userName);
@@ -39,6 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
+    @Transactional
     public UserAccountDto getByUserName(String userName) throws ServiceException {
             Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
         if (userOpt.isPresent()) {

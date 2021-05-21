@@ -34,17 +34,14 @@ public class UserAccount {
     
     @Column(name = "is_admin")
     private boolean isAdmin = false;
-    
-    @Column(name = "enable_newsletter")
-    private boolean enableNewsletter;
 
     private String location;
     
-    @OneToMany(cascade=ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
 	private List<Photo> photos;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="photo_profile_id")
     private Photo profilePhoto;
 }
