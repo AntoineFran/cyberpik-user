@@ -47,6 +47,14 @@ public class UserAccountService implements IService<UserAccountDto> {
         }
     }
 
+    public UserAccountDto getByEmail(String userEmail) throws ServiceException {
+        Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByEmail(userEmail);
+        if (userOpt.isPresent()) {
+            return this.modelMapper.map(userOpt.get(), UserAccountDto.class);
+        } else {
+            throw new ServiceException("UserAccount not found");
+        }    }
+
     @Transactional
     public boolean verifyByUserName(String userName) {
         Optional<UserAccount> userOpt = this.userAccountDao.findUserAccountByUserName(userName);
