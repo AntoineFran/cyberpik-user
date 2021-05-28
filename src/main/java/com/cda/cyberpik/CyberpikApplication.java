@@ -1,6 +1,7 @@
 package com.cda.cyberpik;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -27,10 +28,13 @@ public class CyberpikApplication extends SpringBootServletInitializer {
         return new TomcatServletWebServerFactory();
     }
 
+    @Value("${spring.com.cda.cyberpik.api.photo.url}")
+    private String apiPhotoUrl;
+
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:5001/api/v1")
+                .baseUrl(apiPhotoUrl)
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(configurer -> configurer
                                 .defaultCodecs()
